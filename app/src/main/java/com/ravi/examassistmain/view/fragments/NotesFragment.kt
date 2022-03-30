@@ -25,7 +25,6 @@ import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
-@RequiresApi(Build.VERSION_CODES.N)
 class NotesFragment : Fragment() {
 
     var notesRecyclerView: RecyclerView? = null
@@ -52,41 +51,44 @@ class NotesFragment : Fragment() {
 //        binding.errorTextView.visibility = View.GONE
         lifecycleScope.launchWhenStarted {
             networkListener = NetworkListener()
-            networkListener.checkNetworkAvailability(requireContext()).collect {
-                //show bar that you are offline
 
-                readDatabase()
-
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                networkListener.checkNetworkAvailability(requireContext()).collect {
+                    readDatabase()
+                }
             }
         }
     }
     private fun requestApiData(){
        mainViewModel.getAllDocuments()
-        mainViewModel.documentResponse.observe(this,{ response ->
+        mainViewModel.documentResponse.observe(viewLifecycleOwner) { response ->
 
-            response?.let {  res ->
-                Log.v("NotesAdapter","got something ${res.data.toString()}")
+            response?.let { res ->
+                Log.v("NotesAdapter", "got something ${res.data.toString()}")
 
-                when (res){
+                when (res) {
 
-                   is NetworkResult.Success->{
-                       if(!res.data.isNullOrEmpty()){
-                           mAdapter.setData(res.data)
-                           Log.v("NotesAdapter","data received!!! ${res.data.first() }")
-                       }else{
-                           Log.v("NotesAdapter","hot was successful but no data document received")
-                       }
-                   }
-                    is NetworkResult.Error->{
-                        Log.v("NotesAdapter","Firestore call error")
+                    is NetworkResult.Success -> {
+                        if (!res.data.isNullOrEmpty()) {
+                            mAdapter.setData(res.data)
+                            Log.v("NotesAdapter", "data received!!! ${res.data.first()}")
+                        } else {
+                            Log.v(
+                                "NotesAdapter",
+                                "hot was successful but no data document received"
+                            )
+                        }
                     }
-                    is NetworkResult.Loading->{
-                        Log.v("NotesAdapter","still loading  \uD83E\uDD74")
+                    is NetworkResult.Error -> {
+                        Log.v("NotesAdapter", "Firestore call error")
+                    }
+                    is NetworkResult.Loading -> {
+                        Log.v("NotesAdapter", "still loading  \uD83E\uDD74")
 
                     }
                 }
             }
-        })
+        }
     }
     private fun readDatabase() {
         lifecycleScope.launch {

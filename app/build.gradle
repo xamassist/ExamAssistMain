@@ -97,4 +97,11 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.1'
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.5.2")
+
+    //sdp ssp
+    implementation 'com.intuit.sdp:sdp-android:1.0.5'
+    implementation 'com.intuit.ssp:ssp-android:1.0.5'
+
+    implementation 'com.github.barteksc:android-pdf-viewer:3.2.0-beta.1'
+
 }

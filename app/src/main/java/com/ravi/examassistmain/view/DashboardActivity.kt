@@ -15,6 +15,7 @@ import com.ravi.examassistmain.databinding.BaseLayoutBinding
 import com.ravi.examassistmain.utils.DocViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 
@@ -33,7 +34,6 @@ class DashboardActivity : AppCompatActivity() {
         bindingBase = binding.baseLayout
         context = this
         setContentView(view)
-
         bindingBase.bottomNavigationView.background = null
         bindingBase.bottomNavigationView.menu.getItem(3).isEnabled = false
         loadFragments(NotesFragment())

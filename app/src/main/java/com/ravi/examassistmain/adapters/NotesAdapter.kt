@@ -32,8 +32,10 @@ class NotesAdapter : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
         val foodList: Document = doc[position]
 
         holder.docTitle.text = foodList.documentTitle
-        val firstLetter = foodList.documentTitle.substring(0, 1)
-        holder.docFirstName.text = firstLetter
+        if(!foodList.documentTitle.isNullOrBlank()){
+            val firstLetter = foodList.documentTitle.substring(0, 1)
+            holder.docFirstName.text = firstLetter
+        }
         cxt?.let {
             holder.llNotes.background = ViewUtils.instance.drawCircle(
                 ContextCompat.getColor(
