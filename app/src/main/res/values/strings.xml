@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Exam Assist</string>
+    <string name="zoom_out">Zoom Out</string>
+    <string name="onboarding_one">A toolkit to conquer your semester exams</string>
+    <string name="onboarding_two">Access Notes, Exam papers and syllabus on single click</string>
+    <string name="onboarding_three">Share your resources and and get rewards </string>
+    <string name="notes">Notes</string>
+    <string name="papers">Papers</string>
+    <string name="syllabus">Syllabus</string>
+    <string name="navigation_drawer_open">open</string>
+    <string name="navigation_drawer_close">close</string>
+    <string name="create_your_account">Create your account</string>
+    <string name="countinew_with_facebook">Countinew with Facebook</string>
+    <string name="countinew_with_google">Countinew with Google</string>
+    <string name="signup_with_email">Or Signup with email</string>
+    <string name="read_privacy_policy"><font color="#C6C4C4">I have read the</font> <font color="#8E97FD">  Privacy Policy</font> </string>
+    <string name="get_started">Get Started</string>
+    <string name="welcome_back">Welcome back!</string>
+    <string name="email_address">Email Address</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="already_have_account">Already Have an account?</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="log_in">Log In</string>
+</resources>
