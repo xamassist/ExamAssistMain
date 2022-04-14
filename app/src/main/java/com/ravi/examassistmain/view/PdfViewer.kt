@@ -44,7 +44,7 @@ class PdfViewer : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteListe
         pdfView?.useBestQuality(true)
         pdfView?.minZoom = 1f
         pdfView?.midZoom = 2.0f
-        pdfView?.maxZoom = 5.0f
+        pdfView?.maxZoom = 4.0f
 
         viewConfigurator
             .defaultPage(pageNumber)
