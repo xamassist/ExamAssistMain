@@ -112,7 +112,7 @@ class PdfViewer : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteListe
     }
 
     override fun onPageError(page: Int, t: Throwable?) {
-        Log.v("PdfVieweActivity", "on page error")
+        Log.v("PdfVieweActvity", "on page error")
     }
 
     override fun onTouch(p0: View?, p1: MotionEvent?): Boolean {
