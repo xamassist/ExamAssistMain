@@ -46,9 +46,8 @@ class NotesFragment : Fragment() {
         return  view
     }
 
+
     private fun setData(){
-//        binding.errorImageView.visibility = View.GONE
-//        binding.errorTextView.visibility = View.GONE
         lifecycleScope.launchWhenStarted {
             networkListener = NetworkListener()
 
@@ -60,7 +59,7 @@ class NotesFragment : Fragment() {
         }
     }
     private fun requestApiData(){
-       mainViewModel.getAllDocuments()
+       mainViewModel.getAllDocuments(0)
         mainViewModel.documentResponse.observe(viewLifecycleOwner) { response ->
 
             response?.let { res ->
@@ -92,18 +91,11 @@ class NotesFragment : Fragment() {
     }
     private fun readDatabase() {
         lifecycleScope.launch {
-            mainViewModel.readDocument.observe(viewLifecycleOwner, { database ->
-                if (database.isNotEmpty()) {
-                    Log.d("RecipesFragment", "readDatabase called!")
-                    mAdapter.setData(database.first().document.docData)
-                    //  hideShimmerEffect()
-                } else {
-                      requestApiData()
-                }
-            })
+            requestApiData()
+
         }
     }
-   private fun setAdapter(){
+    private fun setAdapter(){
         notesRecyclerView?.setHasFixedSize(true)
         notesRecyclerView?.layoutManager = LinearLayoutManager(activity)
         notesRecyclerView?.adapter = mAdapter

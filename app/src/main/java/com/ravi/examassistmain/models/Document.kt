@@ -1,55 +1,61 @@
 package com.ravi.examassistmain.models
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.firebase.firestore.PropertyName
-import com.google.j2objc.annotations.Property
+import com.ravi.examassistmain.utils.Constants
+import java.io.Serializable
 
+@Entity(tableName = Constants.DOCUMENT_TABLE)
 data class Document(
     @get:PropertyName("avg_rating") @set:PropertyName("avg_rating")
-    var averageRating: Double = 0.0,
+    var averageRating: Float? = 0f,
 
-//    @get:PropertyName("branch") @set:PropertyName("branch")
-//    var branch: String = "",
-
+    @PrimaryKey
     @get:PropertyName("doc_id") @set:PropertyName("doc_id")
     var documentId: String = "",
 
     @get:PropertyName("doc_type") @set:PropertyName("doc_type")
-    var documentType: String="",
+    var documentType: Int? = 0,
 
     @get:PropertyName("is_premium") @set:PropertyName("is_premium")
-    var isPremium: Int = 0,
+    var isPremium: Int? = 0,
 
     @get:PropertyName("paper_year") @set:PropertyName("paper_year")
-    var paperYear: String = "",
+    var paperYear: Int? = 0,
 
     @get:PropertyName("rating_count") @set:PropertyName("rating_count")
-    var ratingCount: Double = 0.0,
+    var ratingCount: Float? = 0.0f,
 
     @get:PropertyName("sub_count_aktu") @set:PropertyName("sub_count_aktu")
-    var subject_code_aktu: String = "",
+    var subject_code_aktu: String? = "",
 
     @get:PropertyName("sub_count_mjpru") @set:PropertyName("sub_count_mjpru")
-    var subject_code_mjpru: String = "",
+    var subject_code_mjpru: String? = "",
 
     @get:PropertyName("sub_count") @set:PropertyName("sub_count")
-    var subject_code: String = "",
+    var subject_code: String? = "",
 
     @get:PropertyName("tag") @set:PropertyName("tag")
-    var documentTags: String = "",
+    var documentTags: String? = "",
 
-    @get:PropertyName("title") @set:PropertyName("title")
-    var documentTitle: String="",
+    @get:PropertyName("doc_title") @set:PropertyName("doc_title")
+    var documentTitle: String? = "",
 
-    @get:PropertyName("upload_date") @set:PropertyName("upload_date")
-    var uploadDate: String = "",
+//    @get:PropertyName("upload_date") @set:PropertyName("upload_date")
+//    var uploadDate: String = "",
 
     @get:PropertyName("uploader_id") @set:PropertyName("uploader_id")
-    var uploaderId: String = "",
+    var uploaderId: String? = "",
 
     @get:PropertyName("uploader_name") @set:PropertyName("uploader_name")
-    var uploaderName: String = "",
+    var uploaderName: String? = "",
 
     @get:PropertyName("view_count") @set:PropertyName("view_count")
-    var viewCount: Long=0,
-    )
+    var viewCount: Int? = 0,
+    @get:PropertyName("pdf_url") @set:PropertyName("pdf_url")
+    var pdfUrl: String? = "",
+    @get:PropertyName("pdf_path") @set:PropertyName("pdf_path")
+    var pdfPath: String? = ""
+) : Serializable
 

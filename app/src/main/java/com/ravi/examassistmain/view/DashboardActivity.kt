@@ -5,28 +5,22 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.ravi.examassistmain.view.fragments.NotesFragment
-import com.ravi.examassistmain.view.fragments.PaperFragment
 import com.ravi.examassistmain.view.fragments.SyllabusFragment
 import com.ravi.examassistmain.R
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.ravi.examassistmain.viewmodel.MainViewModel
 import com.ravi.examassistmain.databinding.ActivityDashboardBinding
 import com.ravi.examassistmain.databinding.BaseLayoutBinding
-import com.ravi.examassistmain.utils.DocViewModelFactory
+import com.ravi.examassistmain.view.fragments.PapersFragment
 import dagger.hilt.android.AndroidEntryPoint
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 
 @AndroidEntryPoint
 class DashboardActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDashboardBinding
     private lateinit var bindingBase: BaseLayoutBinding
-
-    private lateinit var  mainViewModel: MainViewModel
     private lateinit var context: Context
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDashboardBinding.inflate(layoutInflater)
@@ -36,21 +30,18 @@ class DashboardActivity : AppCompatActivity() {
         setContentView(view)
         bindingBase.bottomNavigationView.background = null
         bindingBase.bottomNavigationView.menu.getItem(3).isEnabled = false
-        loadFragments(NotesFragment())
-    }
 
-    private fun setViewModel(){
-       // mainViewModel.
-    }
-
-    private val bottomNavMethod = BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
-        var fragment: Fragment? = null
-        when (menuItem.itemId) {
-            R.id.navigation_notes -> fragment = NotesFragment()
-            R.id.navigation_paper -> fragment = PaperFragment()
-            R.id.navigation_syllabus -> fragment = SyllabusFragment()
+        bindingBase.bottomNavigationView.setOnItemSelectedListener { menuItem ->
+            var fragment: Fragment? = null
+            when (menuItem.itemId) {
+                R.id.navigation_notes -> fragment = NotesFragment()
+                R.id.navigation_paper -> fragment = PapersFragment()
+                R.id.navigation_syllabus -> fragment = SyllabusFragment()
+            }
+            loadFragments(fragment)
+            return@setOnItemSelectedListener true
         }
-        loadFragments(fragment)
+        loadFragments(NotesFragment())
     }
 
     override fun onBackPressed() {
@@ -65,7 +56,8 @@ class DashboardActivity : AppCompatActivity() {
 
     private fun loadFragments(fragment: Fragment?): Boolean {
         if (fragment != null) {
-            supportFragmentManager.beginTransaction().replace(R.id.mainFrameLayout, fragment).commit()
+            supportFragmentManager.beginTransaction().replace(R.id.mainFrameLayout, fragment)
+                .commit()
         }
         return true
     }

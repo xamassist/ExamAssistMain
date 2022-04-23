@@ -60,6 +60,4 @@ fun providesFirestoreInstance(): FirebaseFirestore {
     ): CollectionReference {
         return fireStore.collection(Constants.DOCUMENT_COLLECTION)
     }
-
-
 }

@@ -8,6 +8,7 @@
     android:layout_marginRight="5dp">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/mainCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="6dp"
@@ -53,7 +54,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
-                    android:background="@drawable/tag_layout"
+                    android:background="@drawable/notes_tag_background"
                     android:backgroundTint="@color/red">
 
                     <TextView
@@ -75,13 +76,14 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/txt_name"
+                        android:id="@+id/docName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textColor="@color/black"
                         android:singleLine="true"
                         android:textSize="16sp"
+                        android:text="Name"
                         android:fontFamily="@font/nunito_bold"
                         android:textStyle="bold" />
 
@@ -103,7 +105,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/tv_name"
+                        android:id="@+id/tv_username"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -144,6 +146,7 @@
                         android:fontFamily="@font/nunito_regular"
                         android:textSize="12sp" />
                     <TextView
+                        android:id="@+id/tv_tagList"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"

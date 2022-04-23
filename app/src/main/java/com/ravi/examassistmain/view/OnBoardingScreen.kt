@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.ravi.examassistmain.R
 import com.ravi.examassistmain.animation.animationtypes.AntiClockSpinTransformation
+import com.ravi.examassistmain.animation.animationtypes.ZoomInTransformer
 import com.ravi.examassistmain.databinding.ActivityOnBoardingScreenBinding
 
 //@AndroidEntryPoint
@@ -44,7 +45,7 @@ class OnBoardingActivity : AppCompatActivity(){
             }
         }
         binding.wormDotsIndicator.setViewPager2(binding.onBoardingVP)
-        binding.onBoardingVP.setPageTransformer(AntiClockSpinTransformation())
+        binding.onBoardingVP.setPageTransformer(ZoomInTransformer())
         binding.btnNextScreen.setOnClickListener{startActivity(Intent(this, DashboardActivity::class.java))}
     }
 /*

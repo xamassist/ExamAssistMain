@@ -1,4 +1,5 @@
 package com.ravi.examassistmain.viewmodel
+
 import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
@@ -6,8 +7,8 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
+import com.google.firebase.firestore.Query
 import com.ravi.examassistmain.data.Repository
-import com.ravi.examassistmain.data.database.DocumentEntity
 import com.ravi.examassistmain.models.Document
 import com.ravi.examassistmain.models.Documents
 import com.ravi.examassistmain.utils.NetworkResult
@@ -26,43 +27,67 @@ class MainViewModel @Inject constructor(
 
     /** ROOM DATABASE */
 
-    val readDocument: LiveData<List<DocumentEntity>> = repository.local.readDocument().asLiveData()
+    //val readDocument: LiveData<List<DocumentEntity>> = repository.local.readDocument().asLiveData()
 
-    private fun insertDocument (documentEntity: DocumentEntity) =
+    private fun insertDocument(document: Document) =
         viewModelScope.launch(Dispatchers.IO) {
-            repository.local.insertRecipes(documentEntity)
+            repository.local.insertRecipes(document)
         }
 
-    fun deleteDocument(documentEntity: DocumentEntity) =
+    private fun insertDocumentList(documentList: List<Document>) =
         viewModelScope.launch(Dispatchers.IO) {
-            repository.local.deleteFavoriteRecipe(documentEntity)
+            for (doc in documentList) {
+                repository.local.insertRecipes(doc)
+            }
+        }
+
+    fun deleteDocument(document: Document) =
+        viewModelScope.launch(Dispatchers.IO) {
+            // repository.local.deleteFavoriteRecipe(documentEntity)
         }
 
     fun deleteAllDocument() =
         viewModelScope.launch(Dispatchers.IO) {
-            repository.local.deleteAllDocuments()
+            //repository.local.deleteAllDocuments()
         }
 
     /** Firestore */
     var documentResponse: MutableLiveData<NetworkResult<List<Document>>> = MutableLiveData()
 
     @RequiresApi(Build.VERSION_CODES.M)
-    fun getAllDocuments() = viewModelScope.launch {
-        getDocumentSaveCall()
+    fun getAllDocuments(docType: Int = 0) = viewModelScope.launch {
+        getDocumentSaveCall(docType)
+    }
+
+
+    private fun formDummyQuery() {
+        // val query: Query =
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private suspend fun getDocumentSaveCall() {
+    private suspend fun getDocumentSaveCall(docType: Int = 0) {
         documentResponse.value = NetworkResult.Loading()
         if (hasInternetConnection()) {
             try {
-                val response = repository.remote.getAllDocuments()
-                documentResponse.value = handleDocumentResponse(response)
+                val docList = mutableListOf<Document>()
+                val response = repository.remote.getAllDocuments(docType)
+                response?.get()?.addOnSuccessListener { snapshot ->
+                    snapshot.documents.forEach {
+                    val doc = it.toObject(Document::class.java)
+                    doc?.documentId = it.id
+                    if (doc != null) {
+                        docList.add(doc)
+                    }
+                }
+                    documentResponse.value = handleDocumentResponse(docList)
+                }?.addOnFailureListener {
+                    documentResponse.value = NetworkResult.Error("Something went wrong")
+                }
 
                 val doc = documentResponse.value?.data
-                if(doc != null) {
+                if (doc != null) {
                     offlineCacheDocuments(doc)
-                }else{
+                } else {
                     documentResponse.value = NetworkResult.Error("Documents data was null.")
                 }
             } catch (e: Exception) {
@@ -74,21 +99,19 @@ class MainViewModel @Inject constructor(
     }
 
     private fun offlineCacheDocuments(docList: List<Document>) {
-        val documents = Documents(docList)
-        val recipesEntity = DocumentEntity(documents)
-        insertDocument(recipesEntity)
+        insertDocumentList(docList)
     }
 
 
     private fun handleDocumentResponse(response: List<Document>?): NetworkResult<List<Document>> {
         response?.let { docList ->
-            return if(!docList.isNullOrEmpty()){
+            return if (!docList.isNullOrEmpty()) {
                 NetworkResult.Success(docList)
-            }else{
+            } else {
                 NetworkResult.Error("No files found")
             }
 
-        }?.run{
+        }?.run {
             return NetworkResult.Error("response not found")
         }
         return NetworkResult.Error("No files found")

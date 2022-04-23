@@ -1,6 +1,7 @@
 package com.ravi.examassistmain.adapters
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +11,9 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ravi.examassistmain.R
+import com.ravi.examassistmain.databinding.NotesListBinding
 import com.ravi.examassistmain.models.Document
+import com.ravi.examassistmain.pdf.PdfActivity
 import com.ravi.examassistmain.utils.DocumentDiffUtil
 import com.ravi.examassistmain.utils.ViewUtils
 
@@ -18,10 +21,10 @@ class NotesAdapter : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
     private var doc = emptyList<Document>()
     var cxt: Context? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        var view: View =
-            LayoutInflater.from(parent.context).inflate(R.layout.notes_list, parent, false)
-        cxt = parent.context
-        return ViewHolder(view)
+
+        val binding = NotesListBinding
+            .inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun getItemCount(): Int {
@@ -29,29 +32,32 @@ class NotesAdapter : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val foodList: Document = doc[position]
-
-        holder.docTitle.text = foodList.documentTitle
-        if(!foodList.documentTitle.isNullOrBlank()){
-            val firstLetter = foodList.documentTitle.substring(0, 1)
-            holder.docFirstName.text = firstLetter
-        }
-        cxt?.let {
-            holder.llNotes.background = ViewUtils.instance.drawCircle(
-                ContextCompat.getColor(
-                    it,
-                    ViewUtils.instance.colorGenerator()
-                )
-            )
-        }
-
+        holder.setData(doc[position])
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val docTitle: TextView = itemView.findViewById(R.id.txt_name)
-        val llNotes: LinearLayout = itemView.findViewById(R.id.ll_notes_icon)
-        val docFirstName: TextView = itemView.findViewById(R.id.tv_name_icon)
+    inner class ViewHolder(val binding: NotesListBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun setData(document: Document) {
+            binding.docName.text = document.documentTitle
+            if (document.documentTitle?.isNotBlank() == true) {
+                val firstLetter = document.documentTitle?.substring(0, 1)
+                binding.tvNameIcon.text = firstLetter
+            }
 
+                binding.llNotesIcon.background = ViewUtils.instance.drawCircle(
+                    ContextCompat.getColor(
+                        binding.llNotesIcon.context,
+                        ViewUtils.instance.colorGenerator()
+                    )
+                )
+
+            binding.mainCardView.setOnClickListener {
+
+                    val intent = Intent(binding.mainCardView.context, PdfActivity::class.java)
+                    intent.putExtra("document", document)
+                binding.mainCardView.context.startActivity(intent)
+
+            }
+        }
     }
 
     fun setData(newData: List<Document>) {

@@ -3,14 +3,13 @@ package com.ravi.examassistmain.data.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.ravi.examassistmain.data.RoomConverters
+import com.ravi.examassistmain.models.Document
 
 @Database(
-    entities = [DocumentEntity::class],
+    entities = [Document::class],
     version = 1,
     exportSchema = false
 )
-@TypeConverters(RoomConverters::class)
 abstract class DocumentDatabase: RoomDatabase() {
 
     abstract fun documentDao(): DocumentDao

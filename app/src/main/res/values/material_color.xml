@@ -283,6 +283,7 @@
     <color name="ea_grey_900">#212121</color>
     <color name="ea_black_1000">#000000</color>
     <color name="ea_white_1000">#ffffff</color>
+    <color name="ea_white_transparent">#33ffffff</color>
 
     <!--blue grey-->
     <color name="ea_blue_grey_50">#ECEFF1</color>

@@ -6,6 +6,7 @@ import com.ravi.examassistmain.R
 class ViewUtils {
     companion object{
         val instance = ViewUtils()
+
     }
     fun drawCircle(backgroundColor: Int): GradientDrawable? {
         val shape = GradientDrawable()
