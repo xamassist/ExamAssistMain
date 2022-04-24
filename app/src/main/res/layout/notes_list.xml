@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="5dp"
-    android:layout_marginBottom="5dp"
-    android:layout_marginRight="5dp">
+    android:layout_marginRight="5dp"
+    android:layout_marginBottom="5dp">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/mainCardView"
@@ -27,16 +27,17 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="5dp"
                 android:background="@color/colorPrimary">
+
                 <TextView
                     android:id="@+id/tv_name_icon"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:maxLength="1"
-                    android:textSize="42dp"
-                    android:text="S"
                     android:fontFamily="@font/nunito_bold"
                     android:gravity="center"
-                    android:textColor="@color/white"/>
+                    android:maxLength="1"
+                    android:text="S"
+                    android:textColor="@color/white"
+                    android:textSize="42dp" />
 
 
             </LinearLayout>
@@ -44,8 +45,8 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginStart="6dp"
+                android:layout_weight="1"
 
                 android:orientation="vertical">
 
@@ -60,10 +61,10 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:gravity="center"
                         android:paddingLeft="4dp"
                         android:paddingRight="4dp"
                         android:text="N"
-                        android:gravity="center"
                         android:textColor="@color/white"
                         android:textSize="10sp" />
 
@@ -80,19 +81,19 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:textColor="@color/black"
-                        android:singleLine="true"
-                        android:textSize="16sp"
-                        android:text="Name"
                         android:fontFamily="@font/nunito_bold"
+                        android:singleLine="true"
+                        android:text="Name"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
-                        android:text="12-07-2021"
                         android:fontFamily="@font/nunito_regular"
+                        android:text="12-07-2021"
                         android:textSize="12sp" />
 
                 </LinearLayout>
@@ -102,26 +103,28 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:layout_marginRight="5dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    >
 
                     <TextView
                         android:id="@+id/tv_username"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:layout_gravity="center"
+                        android:layout_weight="1"
                         android:singleLine="true"
                         android:text="Ravi mishra | 25 page"
                         android:textSize="12sp" />
 
                     <TextView
+                        android:visibility="gone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center"
                         android:layout_marginLeft="5dp"
                         android:drawableLeft="@drawable/ic_password"
                         android:drawablePadding="5dp"
                         android:gravity="center"
-                        android:layout_gravity="center"
                         android:text="120"
                         android:textSize="12sp" />
 
@@ -137,24 +140,25 @@
                     <TextView
                         android:layout_width="40dp"
                         android:layout_height="wrap_content"
-                        android:text="Tags"
+                        android:background="@color/colorAccent"
+                        android:fontFamily="@font/nunito_regular"
                         android:padding="3dp"
                         android:singleLine="true"
-                        android:background="@color/colorAccent"
-                        android:textColor="@color/white"
+                        android:text="Tags"
                         android:textAlignment="center"
-                        android:fontFamily="@font/nunito_regular"
+                        android:textColor="@color/white"
                         android:textSize="12sp" />
+
                     <TextView
                         android:id="@+id/tv_tagList"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Equilibrium | Collision Theory | Gas Laws"
-                        android:singleLine="true"
                         android:layout_marginStart="4dp"
                         android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
                         android:fontFamily="@font/nunito_regular"
+                        android:singleLine="true"
+                        android:text="Equilibrium | Collision Theory | Gas Laws"
                         android:textSize="12sp" />
 
                 </LinearLayout>
@@ -163,43 +167,27 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:layout_marginRight="5dp"
+                    android:layout_marginEnd="5dp"
                     android:layout_marginBottom="10dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                >
 
-                    <ImageView
-                        android:id="@+id/iv_star_1"
-                        android:layout_width="@dimen/ic_star_dimes"
-                        android:layout_height="@dimen/ic_star_dimes"
-                        android:layout_marginStart="3dp"
-                        android:src="@drawable/ic_star_enabled"/>
-                    <ImageView
-                        android:id="@+id/iv_star_2"
-                        android:layout_width="@dimen/ic_star_dimes"
-                        android:layout_height="@dimen/ic_star_dimes"
-                        android:layout_marginStart="3dp"
-
-                        android:src="@drawable/ic_star_enabled"/>
-                    <ImageView
-                        android:id="@+id/iv_star_3"
-                        android:layout_width="@dimen/ic_star_dimes"
-                        android:layout_height="@dimen/ic_star_dimes"
-                        android:layout_marginStart="3dp"
-                        android:src="@drawable/ic_star_enabled"/>
-                    <ImageView
-                        android:id="@+id/iv_star_4"
-                        android:layout_width="@dimen/ic_star_dimes"
-                        android:layout_height="@dimen/ic_star_dimes"
-                        android:layout_marginStart="3dp"
-
-                        android:src="@drawable/ic_star_enabled"/>
-                    <ImageView
-                        android:id="@+id/iv_star_5"
-                        android:layout_width="@dimen/ic_star_dimes"
-                        android:layout_height="@dimen/ic_star_dimes"
-                        android:layout_marginStart="3dp"
-
-                        android:src="@drawable/ic_star_enabled"/>
+                    <RatingBar
+                        android:id="@+id/ratingBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="?android:attr/ratingBarStyleSmall"
+                        android:numStars="5"
+                        android:orientation="horizontal"/>
+                    <TextView
+                        android:id="@+id/tvRatingCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:fontFamily="@font/nunito_regular"
+                        android:maxLines="1"
+                        android:textSize="@dimen/_9ssp"
+                        android:text="(0)"/>
 
                 </LinearLayout>
 

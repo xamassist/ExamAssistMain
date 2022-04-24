@@ -1,6 +1,5 @@
 package com.ravi.examassistmain.adapters
 
-import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -15,7 +14,6 @@ import com.ravi.examassistmain.utils.ViewUtils
 
 class PapersAdapter : RecyclerView.Adapter<PapersAdapter.ViewHolder>() {
     private var doc = emptyList<Document>()
-    var cxt: Context? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
         val binding = PaperListBinding
@@ -31,7 +29,8 @@ class PapersAdapter : RecyclerView.Adapter<PapersAdapter.ViewHolder>() {
         holder.setData(doc[position])
     }
 
-    inner class ViewHolder(private val binding: PaperListBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(private val binding: PaperListBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun setData(document: Document) {
             binding.docName.text = document.documentTitle
             if (document.documentTitle?.isNotBlank() == true) {
@@ -39,17 +38,18 @@ class PapersAdapter : RecyclerView.Adapter<PapersAdapter.ViewHolder>() {
                 binding.tvIconName.text = firstLetter
             }
 
-                binding.llNotesIcon.background = ViewUtils.instance.drawCircle(
-                    ContextCompat.getColor(
-                        binding.llNotesIcon.context,
-                        ViewUtils.instance.colorGenerator()
-                    )
+            binding.llNotesIcon.background = ViewUtils.instance.drawCircle(
+                ContextCompat.getColor(
+                    binding.llNotesIcon.context,
+                    ViewUtils.instance.colorGenerator()
                 )
+            )
 
+            binding.tvPaperYear.text = document.paperYear?.toString() ?: "-"
+            binding.tvUploadedBy.text = document.uploader
             binding.mainCardView.setOnClickListener {
-
-                    val intent = Intent(binding.mainCardView.context, PdfActivity::class.java)
-                    intent.putExtra("document", document)
+                val intent = Intent(binding.mainCardView.context, PdfActivity::class.java)
+                intent.putExtra("document", document)
                 binding.mainCardView.context.startActivity(intent)
             }
         }

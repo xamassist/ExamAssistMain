@@ -6,15 +6,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.ravi.examassistmain.R
-import com.ravi.examassistmain.adapters.NotesAdapter
-import com.ravi.examassistmain.models.Document
+import com.ravi.examassistmain.adapters.PapersAdapter
+import com.ravi.examassistmain.databinding.FragmentPaperBinding
 import com.ravi.examassistmain.utils.NetworkListener
 import com.ravi.examassistmain.utils.NetworkResult
 import com.ravi.examassistmain.viewmodel.MainViewModel
@@ -27,20 +25,17 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class PapersFragment : Fragment() {
 
-    var notesRecyclerView: RecyclerView? = null
-    private var documentArray: MutableList<Document> = mutableListOf()
     private lateinit var mainViewModel: MainViewModel
     private lateinit var networkListener: NetworkListener
-    private val mAdapter by lazy { NotesAdapter() }
+    lateinit var binding:FragmentPaperBinding
+    private val mAdapter by lazy { PapersAdapter() }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val view =  inflater.inflate(R.layout.fragment_paper, container, false)
+        binding = FragmentPaperBinding.inflate(inflater,container,false)
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
-
-        notesRecyclerView = view.findViewById(R.id.rb_paperRecyclerView)
         setAdapter()
         setData()
-        return  view
+        return  binding.root
     }
 
     private fun setData(){
@@ -55,8 +50,8 @@ class PapersFragment : Fragment() {
         }
     }
     private fun requestApiData(){
-       mainViewModel.getAllDocuments()
-        mainViewModel.documentResponse.observe(viewLifecycleOwner) { response ->
+       mainViewModel.getAllDocuments(1)
+        mainViewModel.papersResponse.observe(viewLifecycleOwner) { response ->
 
             response?.let { res ->
                 Log.v("NotesAdapter", "got something ${res.data.toString()}")
@@ -91,9 +86,10 @@ class PapersFragment : Fragment() {
         }
     }
     private fun setAdapter(){
-        notesRecyclerView?.setHasFixedSize(true)
-        notesRecyclerView?.layoutManager = LinearLayoutManager(activity)
-        notesRecyclerView?.adapter = mAdapter
+        binding.rbPaperRecyclerView?.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(activity)
+            adapter = mAdapter
+        }
     }
-
 }

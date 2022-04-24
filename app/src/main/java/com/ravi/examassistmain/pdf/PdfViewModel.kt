@@ -27,52 +27,11 @@ class PdfViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
 
     /** ROOM DATABASE */
-
   var getPdfDocument: MutableLiveData<Document> = MutableLiveData()
-
-    private fun insertDocument(document: Document) =
-        viewModelScope.launch(Dispatchers.IO) {
-           repository.local.insertRecipes(document)
-        }
 
       fun getDoc(documentId: String) {
     viewModelScope.launch(Dispatchers.IO) {
         getPdfDocument.postValue(repository.local.getDocument(documentId))
    }
 }
-    private fun insertDocumentList (documentList: List<Document>) =
-        viewModelScope.launch(Dispatchers.IO) {
-            for (doc in documentList){
-                repository.local.insertRecipes(doc)
-            }
-        }
-
-    fun deleteDocument(document: Document) =
-        viewModelScope.launch(Dispatchers.IO) {
-            // repository.local.deleteFavoriteRecipe(documentEntity)
-        }
-
-    fun deleteAllDocument() =
-        viewModelScope.launch(Dispatchers.IO) {
-            //repository.local.deleteAllDocuments()
-        }
-
-    /** Firestore */
-    var documentResponse: MutableLiveData<NetworkResult<List<Document>>> = MutableLiveData()
-
-    @RequiresApi(Build.VERSION_CODES.M)
-    private fun hasInternetConnection(): Boolean {
-        val connectivityManager = getApplication<Application>().getSystemService(
-            Context.CONNECTIVITY_SERVICE
-        ) as ConnectivityManager
-        val activeNetwork = connectivityManager.activeNetwork ?: return false
-        val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
-        return when {
-            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
-            else -> false
-        }
-    }
-
 }

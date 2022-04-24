@@ -56,6 +56,11 @@ data class Document(
     @get:PropertyName("pdf_url") @set:PropertyName("pdf_url")
     var pdfUrl: String? = "",
     @get:PropertyName("pdf_path") @set:PropertyName("pdf_path")
-    var pdfPath: String? = ""
+    var pdfPath: String? = "",
+    @get:PropertyName("doc_size") @set:PropertyName("doc_size")
+    var pageCount: Int? = 0,
+    @get:PropertyName("uploader") @set:PropertyName("uploader")
+    var uploader: String? = "",
+
 ) : Serializable
 

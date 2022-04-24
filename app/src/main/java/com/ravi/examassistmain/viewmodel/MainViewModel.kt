@@ -52,7 +52,8 @@ class MainViewModel @Inject constructor(
         }
 
     /** Firestore */
-    var documentResponse: MutableLiveData<NetworkResult<List<Document>>> = MutableLiveData()
+    var notesResponse: MutableLiveData<NetworkResult<List<Document>>> = MutableLiveData()
+    var papersResponse: MutableLiveData<NetworkResult<List<Document>>> = MutableLiveData()
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun getAllDocuments(docType: Int = 0) = viewModelScope.launch {
@@ -66,7 +67,12 @@ class MainViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.M)
     private suspend fun getDocumentSaveCall(docType: Int = 0) {
-        documentResponse.value = NetworkResult.Loading()
+        if(docType==0){
+            notesResponse.value = NetworkResult.Loading()
+        }else{
+            papersResponse.value = NetworkResult.Loading()
+        }
+
         if (hasInternetConnection()) {
             try {
                 val docList = mutableListOf<Document>()
@@ -79,22 +85,47 @@ class MainViewModel @Inject constructor(
                         docList.add(doc)
                     }
                 }
-                    documentResponse.value = handleDocumentResponse(docList)
+                    if(docType==0){
+                        notesResponse.value = handleDocumentResponse(docList)
+                    }else{
+                        papersResponse.value = handleDocumentResponse(docList)
+                    }
                 }?.addOnFailureListener {
-                    documentResponse.value = NetworkResult.Error("Something went wrong")
+                    if(docType==0){
+                        notesResponse.value = NetworkResult.Error("Something went wrong")
+                    }else{
+                        papersResponse.value = NetworkResult.Error("Something went wrong")
+                    }
                 }
 
-                val doc = documentResponse.value?.data
-                if (doc != null) {
-                    offlineCacheDocuments(doc)
+                val doc =  if (docType==0){
+                    notesResponse.value?.data
                 } else {
-                    documentResponse.value = NetworkResult.Error("Documents data was null.")
+                    papersResponse.value?.data
+                }
+
+                if (doc != null) {
+                   // offlineCacheDocuments(doc)
+                } else {
+                    if(docType==0){
+                        notesResponse.value = NetworkResult.Error("Documents data was null.")
+                    }else{
+                        papersResponse.value = NetworkResult.Error("Documents data was null.")
+                    }
                 }
             } catch (e: Exception) {
-                documentResponse.value = NetworkResult.Error("Documents not found.")
+                if(docType==0){
+                    notesResponse.value = NetworkResult.Error("Documents not found.")
+                }else{
+                    papersResponse.value = NetworkResult.Error("Documents not found.")
+                }
             }
         } else {
-            documentResponse.value = NetworkResult.Error("No Internet Connection.")
+            if(docType==0){
+                notesResponse.value = NetworkResult.Error("No Internet Connection.")
+            }else{
+                papersResponse.value = NetworkResult.Error("No Internet Connection.")
+            }
         }
     }
 

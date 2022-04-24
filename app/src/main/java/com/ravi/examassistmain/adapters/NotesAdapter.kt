@@ -19,7 +19,6 @@ import com.ravi.examassistmain.utils.ViewUtils
 
 class NotesAdapter : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
     private var doc = emptyList<Document>()
-    var cxt: Context? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
         val binding = NotesListBinding
@@ -43,21 +42,41 @@ class NotesAdapter : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
                 binding.tvNameIcon.text = firstLetter
             }
 
-                binding.llNotesIcon.background = ViewUtils.instance.drawCircle(
-                    ContextCompat.getColor(
-                        binding.llNotesIcon.context,
-                        ViewUtils.instance.colorGenerator()
-                    )
+            binding.llNotesIcon.background = ViewUtils.instance.drawCircle(
+                ContextCompat.getColor(
+                    binding.llNotesIcon.context,
+                    ViewUtils.instance.colorGenerator()
                 )
-
+            )
+            binding.tvUsername.text = getNameWithPageNum(document.uploader?:"", document.pageCount?:0)
+            binding.tvTagList.text = document.documentTags?.let { getTagString(it) }
+            binding.tvRatingCount.text = document.ratingCount?.toString() ?:"0"
+            binding.ratingBar.rating = document.averageRating ?: 0F
             binding.mainCardView.setOnClickListener {
 
-                    val intent = Intent(binding.mainCardView.context, PdfActivity::class.java)
-                    intent.putExtra("document", document)
+                val intent = Intent(binding.mainCardView.context, PdfActivity::class.java)
+                intent.putExtra("document", document)
                 binding.mainCardView.context.startActivity(intent)
 
             }
         }
+        private fun getTagString(tags:String): String{
+            var tagString = ""
+            val tagArray = tags.split(" ")
+            for(tag in tagArray){
+                tagString+=" | $tag"
+            }
+            return tagString
+        }
+        private fun getNameWithPageNum(name: String, pageNumber: Int): String{
+            if(pageNumber==0){
+                return name
+            }else if (pageNumber==1){
+                return "$name | $pageNumber page"
+            }
+            return "$name | $pageNumber pages"
+        }
+
     }
 
     fun setData(newData: List<Document>) {

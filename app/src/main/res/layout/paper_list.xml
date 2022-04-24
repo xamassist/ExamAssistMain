@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:layout_marginLeft="5dp"
     android:layout_marginBottom="5dp"
-    android:layout_marginRight="5dp">
+    android:layout_marginRight="5dp"
+    android:padding="@dimen/_8sdp">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/mainCardView"
@@ -56,14 +57,14 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:background="@drawable/papers_tag_background"
-                    android:backgroundTint="@color/red">
+                    android:backgroundTint="@drawable/papers_tag_background">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingLeft="4dp"
                         android:paddingRight="4dp"
-                        android:text="N"
+                        android:text="P"
                         android:gravity="center"
                         android:textColor="@color/white"
                         android:textSize="10sp" />
@@ -94,8 +95,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="5dp"
                     android:orientation="horizontal">
 
                     <TextView
@@ -107,7 +108,7 @@
                         android:singleLine="true"
                         android:text="2019-20"
                         android:fontFamily="@font/nunito_bold"
-                        android:textSize="16sp" />
+                        android:textSize="14sp" />
 
                 </LinearLayout>
                 <TextView
@@ -117,6 +118,7 @@
                     android:layout_weight="1"
                     android:layout_gravity="center"
                     android:singleLine="true"
+                    android:layout_marginTop="@dimen/_2sdp"
                     android:text="Uploaded by: Admin"
                     android:fontFamily="@font/nunito_regular"
                     android:textSize="12sp"
