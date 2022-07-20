@@ -31,20 +31,3 @@ interface DocumentDao {
     suspend fun deleteAllDocuments()
 
 }
-/*
- @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertDocument(documentEntity: DocumentEntity)
-
-
-    @Query("SELECT * FROM document_table ORDER BY id ASC")
-    fun readDocument(): Flow<List<DocumentEntity>>
-
-    @Query("UPDATE document_table SET order_amount = :amount, price = :price WHERE order_id =:id")
-    fun updateDocument(): Flow<List<DocumentEntity>>
-
-    @Delete
-    suspend fun deleteDocument(favoritesEntity: DocumentEntity)
-
-    @Query("DELETE FROM document_table")
-    suspend fun deleteAllDocuments()
- */

@@ -19,6 +19,7 @@ class Constants {
         const val PREFERENCES_BACK_ONLINE = "backOnline"
 
         const val DOCUMENT_TABLE = "document_table"
+        const val USER_TABLE = "user_table"
         const val DB_NAME = "exam_assist_db"
         const val USER_COLLECTION = "users"
         const val DOCUMENT_COLLECTION = "products"

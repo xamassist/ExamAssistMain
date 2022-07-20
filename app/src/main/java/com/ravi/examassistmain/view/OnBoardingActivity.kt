@@ -25,7 +25,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.ravi.examassistmain.R
 import com.ravi.examassistmain.animation.animationtypes.ZoomInTransformer
 import com.ravi.examassistmain.databinding.ActivityOnBoardingScreenBinding
-import com.ravi.examassistmain.utils.Constants
+import com.ravi.examassistmain.models.EAUsers
 import com.ravi.examassistmain.utils.hide
 import com.ravi.examassistmain.utils.show
 
@@ -116,13 +116,19 @@ class OnBoardingActivity : AppCompatActivity(){
     private fun updateUI(fUser: FirebaseUser?) {
         val account = GoogleSignIn.getLastSignedInAccount(applicationContext)
         if (account != null) {
-            val personName = account.displayName
-            val personGivenName = account.givenName
-            val personFamilyName = account.familyName
+            val userName = account.displayName
+
             val personEmail = account.email
-            val personId = account.id
-            val personPhoto: Uri? = account.photoUrl
-            Toast.makeText(this, personName + personEmail, Toast.LENGTH_SHORT).show()
+            val userId = account.id
+            val avatarUrl: Uri? = account.photoUrl
+            var avatar =""
+            if(avatarUrl!=null) {
+                avatar = avatarUrl.toString()
+            }
+            if(userId!=null){
+                val user = EAUsers(email =personEmail,userId =userId, userName =userName, userAvatar =avatar )
+            }
+
         }
     }
     fun createUserProfile(){

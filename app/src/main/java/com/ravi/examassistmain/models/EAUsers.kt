@@ -1,8 +1,11 @@
 package com.ravi.examassistmain.models
 
+import androidx.room.Entity
 import com.google.gson.annotations.SerializedName
+import com.ravi.examassistmain.utils.Constants
 
-data class Users(
+@Entity(tableName = Constants.USER_TABLE)
+data class EAUsers(
     @SerializedName("branch")
     val branch: String?=null,
 
