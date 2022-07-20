@@ -21,7 +21,7 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideHttpClient() : OkHttpClient {
+    fun provideHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
             .readTimeout(15, TimeUnit.SECONDS)
             .connectTimeout(15, TimeUnit.SECONDS)
@@ -47,12 +47,6 @@ object NetworkModule {
             .build()
     }
 
-@Singleton
-@Provides
-fun providesFirestoreInstance(): FirebaseFirestore {
-
-    return FirebaseFirestore.getInstance()
-}
     @Singleton
     @Provides
     fun providesCollectionReference(
@@ -60,4 +54,13 @@ fun providesFirestoreInstance(): FirebaseFirestore {
     ): CollectionReference {
         return fireStore.collection(Constants.DOCUMENT_COLLECTION)
     }
+
+    @Singleton
+    @Provides
+    fun providesUserCollectionReference(
+        fireStore: FirebaseFirestore
+    ): CollectionReference {
+        return fireStore.collection(Constants.USER_COLLECTION)
+    }
+
 }

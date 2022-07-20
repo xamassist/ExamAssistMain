@@ -11,7 +11,6 @@ import com.ravi.examassistmain.models.Document
     exportSchema = false
 )
 abstract class DocumentDatabase: RoomDatabase() {
-
     abstract fun documentDao(): DocumentDao
-
+    abstract fun userDao(): UserDao
 }

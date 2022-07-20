@@ -1,30 +1,47 @@
 package com.ravi.examassistmain.data
 
 import com.ravi.examassistmain.data.database.DocumentDao
+import com.ravi.examassistmain.data.database.UserDao
 import com.ravi.examassistmain.models.Document
+import com.ravi.examassistmain.models.EAUsers
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class LocalDataSource @Inject constructor(
-    private val documentDoa: DocumentDao
+    private val documentDao: DocumentDao,
+    private val userDao: UserDao
 ) {
 
     fun readDocument(): Flow<List<Document>> {
-        return documentDoa.readDocument()
+        return documentDao.readDocument()
     }
 
     suspend fun insertRecipes(documentEntity: Document) {
-        documentDoa.insertDocument(documentEntity)
+        documentDao.insertDocument(documentEntity)
     }
     suspend fun getDocument(documentId: String): Document {
-        return documentDoa.getDocument(documentId)
+        return documentDao.getDocument(documentId)
     }
 
+
+
     suspend fun deleteFavoriteRecipe(documentEntity: Document) {
-        documentDoa.deleteDocument(documentEntity)
+        documentDao.deleteDocument(documentEntity)
     }
 
     suspend fun deleteAllDocuments() {
-        documentDoa.deleteAllDocuments()
+        documentDao.deleteAllDocuments()
+    }
+
+    suspend fun insertUser(documentEntity: EAUsers) {
+        userDao.insert(documentEntity)
+    }
+
+    suspend fun getUser(): EAUsers?{
+        val users = userDao.getUser()
+        if(users.isNullOrEmpty()){
+            return null
+        }
+        return users.first()
     }
 }

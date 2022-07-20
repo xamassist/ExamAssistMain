@@ -32,7 +32,11 @@ object DatabaseModule {
     @Singleton
     @Provides
     fun provideDao(database: DocumentDatabase) = database.documentDao()
-//
+
+    @Singleton
+    @Provides
+    fun provideUserDao(database: DocumentDatabase) = database.documentDao()
+
 //    @Singleton
 //    @Provides
 //    fun provideDocumentFirebaseCall(): CollectionReference {
