@@ -1,5 +1,6 @@
 package com.ravi.examassistmain.utils
 
+import android.view.View
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -11,4 +12,10 @@ fun <T> LiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, observer: Observ
             observer.onChanged(t)
         }
     })
+}
+fun View.show(){
+    this.visibility = View.VISIBLE
+}
+fun View.hide(){
+    this.visibility = View.GONE
 }

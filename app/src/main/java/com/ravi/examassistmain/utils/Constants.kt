@@ -5,7 +5,7 @@ class Constants {
     companion object {
 
         const val BASE_URL = "https://api.stackexchange.com/"
-        const val API_KEY = "ZiXCZbWaOwnDgpVT9Hx8IA(("
+        const val API_KEY = "Jp9ZQAJY9aN1e9niSXGsPzpN"
 
         const val QUERY_KEY = "key"
         const val QUERY_ORDER = "order"

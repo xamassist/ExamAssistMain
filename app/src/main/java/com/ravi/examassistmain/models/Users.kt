@@ -4,31 +4,31 @@ import com.google.gson.annotations.SerializedName
 
 data class Users(
     @SerializedName("branch")
-    val branch: String,
+    val branch: String?=null,
 
     @SerializedName("doj")
-    val dateOfJoining: String,
+    val dateOfJoining: String?=null,
 
     @SerializedName("email")
-    val email: String,
-
-    @SerializedName("id")
-    val userId: String,
+    val email: String?=null,
 
     @SerializedName("name")
-    val userName: String,
+    val userName: String?=null,
 
     @SerializedName("phone")
-    val phone: String,
+    val phone: String?=null,
 
     @SerializedName("semester")
-    val semester: Int,
+    val semester: Int?=null,
 
     @SerializedName("subscription_type")
-    val subscriptionType: Int,
+    val subscriptionType: Int?=null,
 
     @SerializedName("university")
-    val university: String,
+    val university: String?=null,
+    @SerializedName("userId")
+    val userId: String,
 
-
+    @SerializedName("userAvatar")
+    val userAvatar: String?=null,
     )
