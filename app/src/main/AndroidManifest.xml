@@ -16,8 +16,11 @@
         android:theme="@style/Theme.ExamAssistMain"
         tools:replace="android:allowBackup">
         <activity
+            android:name=".view.UserPreferenceActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.SplashActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,23 +29,21 @@
         </activity>
         <activity
             android:name=".pdf.PdfActivity"
-            android:exported="true"/>
+            android:exported="true" />
         <activity
             android:name=".view.DashboardActivity"
             android:exported="true"
-            android:theme="@style/Theme.ExamAssistMain"/>
+            android:theme="@style/Theme.ExamAssistMain" />
         <activity
             android:name=".view.OnBoardingActivity"
             android:exported="true"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
-
-        </activity>
+            android:theme="@style/Theme.AppCompat.NoActionBar"></activity>
         <activity
             android:name=".view.MainActivity"
             android:exported="false" />
         <activity
             android:name=".view.TestActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
     </application>
 
 </manifest>

@@ -104,5 +104,7 @@
 
     <string name="dark_pdf">Dark theme for PDF</string>
     <string name="keep_screen_on">Keep the screen on</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
