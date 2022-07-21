@@ -37,11 +37,8 @@ class LocalDataSource @Inject constructor(
         userDao.insert(documentEntity)
     }
 
-    suspend fun getUser(): EAUsers?{
-        val users = userDao.getUser()
-        if(users.isNullOrEmpty()){
-            return null
-        }
-        return users.first()
+     fun getEAUser(): Flow<List<EAUsers?>>{
+        return userDao.getUser()
+
     }
 }

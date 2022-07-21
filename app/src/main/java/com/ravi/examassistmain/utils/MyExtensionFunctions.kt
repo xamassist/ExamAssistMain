@@ -5,7 +5,10 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.LifecycleOwner
@@ -27,3 +30,6 @@ fun View.hide(){
     this.visibility = View.GONE
 }
 
+fun showToast(view: View,message:String) {
+    Toast.makeText(view.context,message,Toast.LENGTH_SHORT).show()
+}

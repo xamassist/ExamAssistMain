@@ -17,6 +17,7 @@ import com.ravi.examassistmain.adapters.NotesAdapter
 import com.ravi.examassistmain.models.Document
 import com.ravi.examassistmain.utils.NetworkListener
 import com.ravi.examassistmain.utils.NetworkResult
+import com.ravi.examassistmain.utils.observeOnce
 import com.ravi.examassistmain.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,7 +38,7 @@ class NotesFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        var view =  inflater.inflate(R.layout.fragment_notes, container, false)
+        val view =  inflater.inflate(R.layout.fragment_notes, container, false)
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
 
         notesRecyclerView = view.findViewById(R.id.rb_paperRecyclerView)
@@ -90,9 +91,16 @@ class NotesFragment : Fragment() {
         }
     }
     private fun readDatabase() {
-        lifecycleScope.launch {
-            requestApiData()
 
+        lifecycleScope.launch {
+            mainViewModel.readRecipes.observeOnce(viewLifecycleOwner) { database ->
+                if (database.isNotEmpty()) {
+                    Log.d("RecipesFragment", "readDatabase called!")
+                    mAdapter.setData(database)
+                } else {
+                    requestApiData()
+                }
+            }
         }
     }
     private fun setAdapter(){

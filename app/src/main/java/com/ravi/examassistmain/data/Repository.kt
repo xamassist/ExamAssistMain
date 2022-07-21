@@ -1,7 +1,9 @@
 package com.ravi.examassistmain.data
 
+import dagger.Module
 import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
+import javax.inject.Singleton
 
 @ViewModelScoped
 class Repository @Inject constructor(

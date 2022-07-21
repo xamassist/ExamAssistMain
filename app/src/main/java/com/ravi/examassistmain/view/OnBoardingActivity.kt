@@ -1,6 +1,5 @@
 package com.ravi.examassistmain.view
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -10,13 +9,13 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
@@ -26,40 +25,80 @@ import com.ravi.examassistmain.R
 import com.ravi.examassistmain.animation.animationtypes.ZoomInTransformer
 import com.ravi.examassistmain.databinding.ActivityOnBoardingScreenBinding
 import com.ravi.examassistmain.models.EAUsers
+import com.ravi.examassistmain.utils.NetworkResult
 import com.ravi.examassistmain.utils.hide
 import com.ravi.examassistmain.utils.show
+import com.ravi.examassistmain.utils.showToast
+import com.ravi.examassistmain.viewmodel.LoginViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 
-//@AndroidEntryPoint
+@AndroidEntryPoint
 class OnBoardingActivity : AppCompatActivity(){
-    private lateinit var context: Context
     private var mAdapter: ViewsSliderAdapter? = null
     private lateinit var layouts: IntArray
     private lateinit var binding: ActivityOnBoardingScreenBinding
-
-
-    private val signInButton: SignInButton? = null
     private var mGoogleSignInClient: GoogleSignInClient? = null
-    private val TAG = "OnBoardingActivity"
     private var mAuth: FirebaseAuth? = null
-    private val RC_SIGN_IN = 1
+    private val rcSignCode = 1
+
+    private val loginViewModel by lazy {
+        ViewModelProvider(this)[LoginViewModel::class.java]
+    }
+
 
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOnBoardingScreenBinding.inflate(layoutInflater)
         val view = binding.root
-        context = this
         setContentView(view)
         init()
         configureGoogleSignIn()
+        initObservers()
+    }
+
+    private fun initObservers(){
+        loginViewModel.readUser.observe(this){
+            if(it.isNullOrEmpty()){
+                showToast(binding.root,"no userdata found")
+            }else{
+                showToast(binding.root,it.first()?.userName?:"name")
+            }
+        }
+        loginViewModel.userResponse.observe(this){
+            when(it){
+               is NetworkResult.Success->{
+                   showToast(binding.root,"User info fetched")
+                }
+                is NetworkResult.Error->{
+                    showToast(binding.root,"User info fetch failed")
+
+                }
+                is NetworkResult.Error->{
+
+                }
+            }
+        }
+        loginViewModel.userSaveResponse.observe(this){
+            when(it){
+                is NetworkResult.Success->{
+                    showToast(binding.root,"User save info fetched")
+                }
+                is NetworkResult.Error->{
+                    showToast(binding.root,"User save info fetch failed")
+
+                }
+                is NetworkResult.Error->{
+
+                }
+            }
+        }
     }
 
     private fun configureGoogleSignIn(){
         mAuth = FirebaseAuth.getInstance();
-
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken("1036639846334-n65t7i0bp59fh1dinipqid0r33pt7dnp.apps.googleusercontent.com")
-
             .requestEmail()
             .build()
 
@@ -70,11 +109,11 @@ class OnBoardingActivity : AppCompatActivity(){
     }
     private fun signIn() {
         val signInIntent = mGoogleSignInClient?.signInIntent
-        startActivityForResult(signInIntent, RC_SIGN_IN)
+        startActivityForResult(signInIntent, rcSignCode)
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, @Nullable data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == RC_SIGN_IN) {
+        if (requestCode == rcSignCode) {
             val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
             handleSignInResult(task)
         }
@@ -100,8 +139,9 @@ class OnBoardingActivity : AppCompatActivity(){
                 if (task.isSuccessful) {
                     Toast.makeText(this, "Successful", Toast.LENGTH_SHORT).show()
                     val user = mAuth?.currentUser
+                    val isFirstUser = task.result.additionalUserInfo?.isNewUser
                     if (user != null) {
-                        updateUI(user)
+                        updateUI(isFirstUser)
                     }
                 } else {
                     Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show()
@@ -113,7 +153,7 @@ class OnBoardingActivity : AppCompatActivity(){
         }
     }
 
-    private fun updateUI(fUser: FirebaseUser?) {
+    private fun updateUI(isFirstTimeUser:Boolean?=false) {
         val account = GoogleSignIn.getLastSignedInAccount(applicationContext)
         if (account != null) {
             val userName = account.displayName
@@ -125,13 +165,20 @@ class OnBoardingActivity : AppCompatActivity(){
             if(avatarUrl!=null) {
                 avatar = avatarUrl.toString()
             }
+
             if(userId!=null){
                 val user = EAUsers(email =personEmail,userId =userId, userName =userName, userAvatar =avatar )
+                createUserProfile(user,isFirstTimeUser?:false)
             }
 
         }
     }
-    fun createUserProfile(){
+    fun createUserProfile(eaUser: EAUsers, isFirstTimeUser:Boolean){
+        if(isFirstTimeUser){
+            loginViewModel.saveUserDataToServer(eaUser)
+        }else{
+            loginViewModel.insertUserDataInRoom(eaUser)
+        }
 
     }
     private fun init() {

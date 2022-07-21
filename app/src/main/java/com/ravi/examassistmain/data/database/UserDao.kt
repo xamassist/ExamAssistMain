@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface UserDao {
 
-    @Query("SELECT * FROM document_table")
-    fun getUser(): List<EAUsers>
+    @Query("SELECT * FROM user_table")
+     fun getUser(): Flow<List<EAUsers>>
 
     @Insert
     fun insert(users: EAUsers)

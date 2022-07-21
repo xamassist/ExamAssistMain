@@ -3,6 +3,7 @@ package com.ravi.examassistmain.di
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.ravi.examassistmain.AppClass
 import com.ravi.examassistmain.utils.Constants
 import com.ravi.examassistmain.utils.Constants.Companion.BASE_URL
 import dagger.Module
@@ -62,5 +63,7 @@ object NetworkModule {
     ): CollectionReference {
         return fireStore.collection(Constants.USER_COLLECTION)
     }
+    @Provides
+    fun provideApplication(application: AppClass): AppClass = application
 
 }

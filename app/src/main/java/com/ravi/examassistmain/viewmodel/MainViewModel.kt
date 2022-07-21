@@ -21,14 +21,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val repository: Repository,
-    application: Application
-) : AndroidViewModel(application) {
+    private val repository: Repository
+) : ViewModel() {
 
     /** ROOM DATABASE */
 
     //val readDocument: LiveData<List<DocumentEntity>> = repository.local.readDocument().asLiveData()
-
+    val readRecipes: LiveData<List<Document>> = repository.local.readDocument().asLiveData()
     private fun insertDocument(document: Document) =
         viewModelScope.launch(Dispatchers.IO) {
             repository.local.insertRecipes(document)
@@ -67,7 +66,6 @@ class MainViewModel @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.M)
     private suspend fun getDocumentSaveCall(docType: Int = 0) {
         documentResponse.value = NetworkResult.Loading()
-        if (hasInternetConnection()) {
             try {
                 val docList = mutableListOf<Document>()
                 val response = repository.remote.getAllDocuments(docType)
@@ -93,9 +91,7 @@ class MainViewModel @Inject constructor(
             } catch (e: Exception) {
                 documentResponse.value = NetworkResult.Error("Documents not found.")
             }
-        } else {
-            documentResponse.value = NetworkResult.Error("No Internet Connection.")
-        }
+
     }
 
     private fun offlineCacheDocuments(docList: List<Document>) {
@@ -117,20 +113,5 @@ class MainViewModel @Inject constructor(
         return NetworkResult.Error("No files found")
     }
 
-
-    @RequiresApi(Build.VERSION_CODES.M)
-    private fun hasInternetConnection(): Boolean {
-        val connectivityManager = getApplication<Application>().getSystemService(
-            Context.CONNECTIVITY_SERVICE
-        ) as ConnectivityManager
-        val activeNetwork = connectivityManager.activeNetwork ?: return false
-        val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
-        return when {
-            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
-            else -> false
-        }
-    }
 
 }

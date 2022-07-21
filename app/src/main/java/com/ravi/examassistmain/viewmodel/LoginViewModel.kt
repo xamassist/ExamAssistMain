@@ -1,9 +1,8 @@
 package com.ravi.examassistmain.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import android.util.Log
+import androidx.lifecycle.*
 import com.ravi.examassistmain.data.Repository
 import com.ravi.examassistmain.models.Document
 import com.ravi.examassistmain.models.EAUsers
@@ -20,19 +19,21 @@ class LoginViewModel @Inject constructor(
     private val repository: Repository,
     application: Application
 ) : AndroidViewModel(application) {
-    var userResponse: MutableLiveData<NetworkResult<EAUsers>> = MutableLiveData()
-    var userSaveResponse: MutableLiveData<NetworkResult<Boolean>> = MutableLiveData()
+    var readUser = repository.local.getEAUser().asLiveData()
 
     /** Room Data*/
-    private fun insertUserDataInRoom(user: EAUsers) =
+     fun insertUserDataInRoom(user: EAUsers) =
         viewModelScope.launch(Dispatchers.IO) {
             repository.local.insertUser(user)
         }
 
     private fun getUserDataFromRoom() =
         viewModelScope.launch(Dispatchers.IO) {
-            repository.local.getUser()
+            repository.local.getEAUser()
         }
+
+    var userResponse: MutableLiveData<NetworkResult<EAUsers>> = MutableLiveData()
+    var userSaveResponse: MutableLiveData<NetworkResult<Boolean>> = MutableLiveData()
 
     /** firebase Data 1. get user data*/
     fun getUser(userId:String) = viewModelScope.launch {
@@ -85,9 +86,16 @@ class LoginViewModel @Inject constructor(
     }
 
     /** firebase Data 1. save user data*/
-    private fun saveUserDataToServer(eaUser: EAUsers) = viewModelScope.launch(Dispatchers.IO) {
+     fun saveUserDataToServer(eaUser: EAUsers) = viewModelScope.launch(Dispatchers.IO) {
         repository.remote.saveUserData(eaUser)?.addOnSuccessListener {
             userSaveResponse.postValue(NetworkResult.Success(true))
+          val response =   insertUserDataInRoom(eaUser)
+            if(response.isCancelled){
+                Log.v("FirstTimeUser", "Save to room")
+            }else if(response.isCancelled) {
+                Log.v("FirstTimeUser", "failed toSave to room")
+            }
+
         }?.addOnFailureListener{
             userSaveResponse.postValue(NetworkResult.Error("Unable to save user's data"))
         }

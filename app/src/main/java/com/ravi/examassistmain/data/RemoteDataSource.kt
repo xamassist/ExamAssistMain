@@ -6,7 +6,9 @@ import com.google.firebase.firestore.Query
 import com.ravi.examassistmain.models.EAUsers
 import com.ravi.examassistmain.utils.Constants.Companion.DOCUMENT_COLLECTION
 import com.ravi.examassistmain.utils.Constants.Companion.USER_COLLECTION
+import dagger.Module
 import javax.inject.Inject
+import javax.inject.Singleton
 
 
 class RemoteDataSource @Inject constructor(

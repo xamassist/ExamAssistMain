@@ -35,13 +35,20 @@ object DatabaseModule {
 
     @Singleton
     @Provides
-    fun provideUserDao(database: DocumentDatabase) = database.documentDao()
+    fun provideUserDao(database: DocumentDatabase) = database.userDao()
 
+    @Singleton
+    @Provides
+    fun providesFirestoreInstance(): FirebaseFirestore {
+
+        return FirebaseFirestore.getInstance()
+    }
 //    @Singleton
 //    @Provides
-//    fun provideDocumentFirebaseCall(): CollectionReference {
-//        val fireStore: FirebaseFirestore
+//    fun providesCollectionReference(
+//        fireStore: FirebaseFirestore
+//    ): CollectionReference {
 //        return fireStore.collection(Constants.DOCUMENT_COLLECTION)
 //    }
-
+//}
 }
