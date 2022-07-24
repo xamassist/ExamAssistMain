@@ -48,29 +48,20 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
     private lateinit var binding: ActivityPdfBinding
 
     companion object {
-        const val WATCH_TIME_SENT_DURATION: Long = 8
         const val PREFIX = "/_"
     }
     private var menuItem: MenuItem? = null
     private var permissionGranted: Boolean? = false
     private var PERMISSION_CODE = 4040
     private var isDownloadable = false
-    private var isFromDeepLink = false
     private var downloadId: Long = 0L
-    private var watchTime: Long = 0
-    private var progressRunner: Runnable? = null
-    private var progressHandler: Handler? = null
     var pdfView: PDFView? = null
-    private val uri: Uri? = null
     private var pageNumber = 0
     private var totalPageCount = 0
     private var pdfPassword: String? = null
     private var pdfFileName = ""
-    var userSelect = false
-    var isPageDataLoaded = false
+
     var spinnerPageArray: MutableList<PdfPages> = mutableListOf()
-    var pdfId: String? = null
-    var isFirstLoad = true
     var isErrorOpeningFile = false
     lateinit var sharedPref: SharedPreferences
     private var downloadManger: DownloadManager? = null
@@ -79,7 +70,6 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
     private lateinit var  pdfViewModel: PdfViewModel
 
     var document: Document?=null
-    val testUrl = "https://firebasestorage.googleapis.com/v0/b/examassist-b50d0.appspot.com/o/pdfs%2Fphusics1(2016-17).pdf?alt=media&token=216f5a16-d8fc-45b3-8758-e6380c39cb2f"//"https://www.clickdimensions.com/links/TestPDFfile.pdf"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

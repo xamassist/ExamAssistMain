@@ -32,8 +32,8 @@ class UserPreferenceAdapter(var list: List<String>?,val userPrefListener :Prefer
             binding.apply {
                 tvFullName.text = name
                 tvShortName.text = getInitials(name)
-                tvShortName.setBackgroundColor(ViewUtils.instance.colorGenerator())
-                tvShortNameIV.setBackgroundColor(ViewUtils.instance.colorGenerator())
+                tvShortName.setBackgroundColor(ViewUtils.instance.colorGenerator(position))
+                tvShortNameIV.setBackgroundColor(ViewUtils.instance.colorGenerator(position))
                 if (selectedIndex == position) {
                     tvShortName.hide()
                     tvShortNameIV.show()

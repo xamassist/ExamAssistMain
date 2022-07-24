@@ -1,5 +1,6 @@
 package com.ravi.examassistmain.view
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -9,6 +10,7 @@ import androidx.fragment.app.FragmentPagerAdapter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import androidx.viewpager.widget.ViewPager
 import com.ravi.examassistmain.R
 import com.ravi.examassistmain.animation.EALoader
@@ -16,6 +18,7 @@ import com.ravi.examassistmain.databinding.ActivityUserPreferenceBinding
 import com.ravi.examassistmain.utils.*
 import com.ravi.examassistmain.viewmodel.UserPreferenceViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -28,14 +31,17 @@ class UserPreferenceActivity : AppCompatActivity() {
     private var prefBranchList = listOf<String>()
     private var prefSemesterList = listOf<String>()
     private var valueLoadCount = MutableLiveData(0)
-    private var loader: EALoader? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityUserPreferenceBinding.inflate(layoutInflater)
         setContentView(binding.root)
         fetchData()
         binding.btnContinue.setOnClickListener {
-            fetchData()
+            if(areAllSelected){
+                saveUserPreference()
+                startActivity(Intent(this@UserPreferenceActivity,DashboardActivity::class.java))
+                return@setOnClickListener
+            }
             val currentItem = binding.userPrefVP.currentItem
             if (currentItem >= 2) {
                 return@setOnClickListener
@@ -51,6 +57,7 @@ class UserPreferenceActivity : AppCompatActivity() {
     var currentFragment = 0
 
     private fun fetchData() {
+
         lifecycleScope.launch {
             preferenceViewModel.getPreference()
         }
@@ -113,26 +120,24 @@ class UserPreferenceActivity : AppCompatActivity() {
             binding.barIV3.show()
             binding.bar3.disappear()
             binding.barIV3.background =
-                ContextCompat.getDrawable(this, R.drawable.solid_orange_circle_bg)
+                ContextCompat.getDrawable(this, R.drawable.solid_purple_circle_bg)
+            binding.barIV1.background =
+                ContextCompat.getDrawable(this, R.drawable.solid_purple_circle_bg)
+            binding.barIV2.background =
+                ContextCompat.getDrawable(this, R.drawable.solid_purple_circle_bg)
 
+            binding.bar1.disappear()
+            binding.bar2.disappear()
+            binding.bar3.disappear()
+            binding.barIV1.show()
+            binding.barIV2.show()
+            binding.barIV3.showContextMenu()
 
         }
     }
 
-    fun saveUserPreference(){
-        preferenceViewModel.readUser.observe(this){
-            if(it.isNullOrEmpty()){
-                showToast(binding.root,"no userdata found")
-            }else{
-                showToast(binding.root,it.first()?.userName?:"name")
-            }
-            val user = it
-            user.first()?.university = selectedArray[0].toString()
-            user.first()?.branch = selectedArray[1].toString()
-            user.first()?.semester = selectedArray[2]
-            user.first()?.let { it1 -> preferenceViewModel.updateUserInRoomDB(it1) }
-        }
-
+    private fun saveUserPreference(){
+        preferenceViewModel.getUserDataFromRoom()
     }
 
     fun checkIfAllItemSelected(): Boolean {
@@ -151,7 +156,7 @@ class UserPreferenceActivity : AppCompatActivity() {
             list?.let { result ->
                 when (list) {
                     is NetworkResult.Success -> {
-                        loader?.dismiss()
+                        LoadingUtils.hideDialog()
                         result.data?.let {
                             val preferenceData =
                                 formPreferenceData(it as HashMap<String, List<String>>)
@@ -166,14 +171,26 @@ class UserPreferenceActivity : AppCompatActivity() {
                         }
                     }
                     is NetworkResult.Error -> {
-                        loader?.dismiss()
+                        LoadingUtils.hideDialog()
                         result.message?.let { showToast(binding.root, it) }
                     }
                     is NetworkResult.Loading -> {
-                        loader?.show()
+                        LoadingUtils.showDialog(this,false)
                     }
                 }
             }
+        }
+        preferenceViewModel.readUser.observe(this){
+            if(it.isNullOrEmpty()){
+                showToast(binding.root,"no userdata found")
+            }else{
+                showToast(binding.root,it.first()?.userName?:"name")
+            }
+            val user = it
+            user.first()?.university = selectedArray[0].toString()
+            user.first()?.branch = selectedArray[1].toString()
+            user.first()?.semester = selectedArray[2]
+            user.first()?.let { it1 -> preferenceViewModel.updateUserInRoomDB(it1) }
         }
 
 

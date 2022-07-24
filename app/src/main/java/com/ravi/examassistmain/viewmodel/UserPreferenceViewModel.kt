@@ -32,6 +32,10 @@ class UserPreferenceViewModel @Inject constructor(
     fun getPreference() = viewModelScope.launch {
         getPreferenceSafeCall()
     }
+    fun getUserDataFromRoom() =
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.local.getEAUser()
+        }
 
 
     private fun formDummyQuery() {

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ravi.examassistmain.R
 import com.ravi.examassistmain.adapters.NotesAdapter
 import com.ravi.examassistmain.models.Document
+import com.ravi.examassistmain.utils.LoadingUtils
 import com.ravi.examassistmain.utils.NetworkListener
 import com.ravi.examassistmain.utils.NetworkResult
 import com.ravi.examassistmain.utils.observeOnce
@@ -50,7 +51,6 @@ class NotesFragment : Fragment() {
     private fun setData(){
         lifecycleScope.launchWhenStarted {
             networkListener = NetworkListener()
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 networkListener.checkNetworkAvailability(requireContext()).collect {
                     readDatabase()

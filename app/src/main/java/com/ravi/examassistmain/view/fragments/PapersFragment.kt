@@ -55,7 +55,7 @@ class PapersFragment : Fragment() {
         }
     }
     private fun requestApiData(){
-       mainViewModel.getAllDocuments()
+       mainViewModel.getAllDocuments(1)
         mainViewModel.documentResponse.observe(viewLifecycleOwner) { response ->
 
             response?.let { res ->

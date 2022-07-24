@@ -56,13 +56,7 @@ class OnBoardingActivity : AppCompatActivity(){
     }
 
     private fun initObservers(){
-        loginViewModel.readUser.observe(this){
-            if(it.isNullOrEmpty()){
-                showToast(binding.root,"no userdata found")
-            }else{
-                showToast(binding.root,it.first()?.userName?:"name")
-            }
-        }
+
         loginViewModel.userResponse.observe(this){
             when(it){
                is NetworkResult.Success->{
@@ -134,7 +128,6 @@ class OnBoardingActivity : AppCompatActivity(){
                 this
             ) { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(this, "Successful", Toast.LENGTH_SHORT).show()
                     val user = mAuth?.currentUser
                     val isFirstUser = task.result.additionalUserInfo?.isNewUser
                     if (user != null) {
@@ -146,7 +139,7 @@ class OnBoardingActivity : AppCompatActivity(){
                 }
             }
         } else {
-            Toast.makeText(this, "acc failed", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "acc failed", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -176,7 +169,7 @@ class OnBoardingActivity : AppCompatActivity(){
         }else{
             loginViewModel.insertUserDataInRoom(eaUser)
         }
-
+    startActivity(Intent(this,UserPreferenceActivity::class.java))
     }
     private fun init() {
 

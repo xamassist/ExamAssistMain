@@ -27,11 +27,24 @@ class ViewUtils {
             R.color.ea_amber_A700,
             R.color.ea_brown_900,
             R.color.ea_yellow_900,
-            R.color.purple_700
+            R.color.purple_700,
         )
         return colorArray.random()
     }
-
+    fun colorGenerator(index:Int): Int {
+        val position = index%7
+        val colorArray = arrayListOf(
+            R.color.red,
+            R.color.ea_blue_900,
+            R.color.green,
+            R.color.teal_700,
+            R.color.ea_amber_A700,
+            R.color.ea_brown_900,
+            R.color.ea_yellow_900,
+            R.color.purple_700,
+        )
+        return colorArray[position]
+    }
 
 }
 enum class PreferenceType {

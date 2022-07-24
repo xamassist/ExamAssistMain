@@ -7,17 +7,10 @@
     >
 
 
-    <LinearLayout
+
+    <com.github.barteksc.pdfviewer.PDFView
+        android:id="@+id/pdfView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="5dp">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rb_paperRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:listitem="@layout/paper_list" />
-
-    </LinearLayout>
+        android:layout_height="match_parent" />
 
 </LinearLayout>
