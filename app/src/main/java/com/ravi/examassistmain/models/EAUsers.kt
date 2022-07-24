@@ -8,7 +8,7 @@ import com.ravi.examassistmain.utils.Constants
 @Entity(tableName = Constants.USER_TABLE)
 data class EAUsers(
     @SerializedName("branch")
-    val branch: String?=null,
+    var branch: String?=null,
 
     @SerializedName("doj")
     val dateOfJoining: String?=null,
@@ -23,13 +23,13 @@ data class EAUsers(
     val phone: String?=null,
 
     @SerializedName("semester")
-    val semester: Int?=null,
+    var semester: Int?=null,
 
     @SerializedName("subscription_type")
     val subscriptionType: Int?=null,
 
     @SerializedName("university")
-    val university: String?=null,
+    var university: String?=null,
 
     @PrimaryKey
     @SerializedName("userId")

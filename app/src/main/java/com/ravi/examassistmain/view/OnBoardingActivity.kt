@@ -31,8 +31,6 @@ import com.ravi.examassistmain.utils.show
 import com.ravi.examassistmain.utils.showToast
 import com.ravi.examassistmain.viewmodel.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
-
-
 @AndroidEntryPoint
 class OnBoardingActivity : AppCompatActivity(){
     private var mAdapter: ViewsSliderAdapter? = null
@@ -104,7 +102,7 @@ class OnBoardingActivity : AppCompatActivity(){
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        binding.signInButton.setOnClickListener { signIn() }
+        binding.googleSignIn.setOnClickListener { signIn() }
 
     }
     private fun signIn() {
@@ -121,7 +119,6 @@ class OnBoardingActivity : AppCompatActivity(){
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
         try {
             val acc = completedTask.getResult(ApiException::class.java)
-            Toast.makeText(this, "Signed In Successfully", Toast.LENGTH_SHORT).show()
             FirebaseGoogleAuth(acc)
         } catch (e: ApiException) {
             Toast.makeText(this, "Sign In Failed", Toast.LENGTH_SHORT).show()
@@ -194,11 +191,11 @@ class OnBoardingActivity : AppCompatActivity(){
 
         binding.btnNextScreen.setOnClickListener { _ ->
             val current: Int = getItem(+1)
-            if (current < layouts.size) {
+            if (current < layouts.size-1) {
                 binding.onBoardingVP.currentItem = current
             } else {
                 binding.btnNextScreen.hide()
-                binding.signInButton.show()
+                binding.googleSignIn.show()
                 launchHomeScreen()
             }
         }

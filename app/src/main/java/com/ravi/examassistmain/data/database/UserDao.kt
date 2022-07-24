@@ -13,4 +13,6 @@ interface UserDao {
 
     @Insert
     fun insert(users: EAUsers)
+    @Update
+    fun update(users: EAUsers)
 }

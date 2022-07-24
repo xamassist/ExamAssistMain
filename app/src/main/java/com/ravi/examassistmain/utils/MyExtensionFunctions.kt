@@ -29,6 +29,9 @@ fun View.show(){
 fun View.hide(){
     this.visibility = View.GONE
 }
+fun View.disappear(){
+    this.visibility = View.INVISIBLE
+}
 
 fun showToast(view: View,message:String) {
     Toast.makeText(view.context,message,Toast.LENGTH_SHORT).show()

@@ -1,70 +1,87 @@
 package com.ravi.examassistmain.adapters
 
-import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.ravi.examassistmain.R
-import com.ravi.examassistmain.databinding.NotesListBinding
-import com.ravi.examassistmain.models.Document
-import com.ravi.examassistmain.pdf.PdfActivity
-import com.ravi.examassistmain.utils.DocumentDiffUtil
-import com.ravi.examassistmain.utils.ViewUtils
+import com.ravi.examassistmain.databinding.PreferenceOptionRowBinding
+import com.ravi.examassistmain.utils.*
 
-class UserPreferenceAdapter : RecyclerView.Adapter<UserPreferenceAdapter.ViewHolder>() {
-    private var doc = emptyList<Document>()
-    var cxt: Context? = null
+class UserPreferenceAdapter(var list: List<String>?,val userPrefListener :PreferenceSelectionListener?=null
+) :
+    RecyclerView.Adapter<UserPreferenceAdapter.ViewHolder>() {
+    var selectedIndex = -1
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-
-        val binding = NotesListBinding
+        val binding = PreferenceOptionRowBinding
             .inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
     override fun getItemCount(): Int {
-        return doc.size
+        return list?.size ?: 0
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.setData(doc[position])
+        holder.setData(list?.get(position) ?: "", position)
     }
 
-    inner class ViewHolder(val binding: NotesListBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun setData(document: Document) {
-            binding.docName.text = document.documentTitle
-            if (document.documentTitle?.isNotBlank() == true) {
-                val firstLetter = document.documentTitle?.substring(0, 1)
-                binding.tvNameIcon.text = firstLetter
-            }
+    inner class ViewHolder(val binding: PreferenceOptionRowBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun setData(name: String, position: Int) {
+            binding.apply {
+                tvFullName.text = name
+                tvShortName.text = getInitials(name)
+                tvShortName.setBackgroundColor(ViewUtils.instance.colorGenerator())
+                tvShortNameIV.setBackgroundColor(ViewUtils.instance.colorGenerator())
+                if (selectedIndex == position) {
+                    tvShortName.hide()
+                    tvShortNameIV.show()
+                } else {
+                    tvShortName.show()
+                    tvShortNameIV.hide()
+                }
+                itemView.setOnClickListener {
+                    selectedIndex = position
+                    userPrefListener?.selectedIndex(selectedIndex)
+                    if (tvShortName.isVisible) {
+                        tvShortName.hide()
+                        tvShortNameIV.show()
+                    } else {
+                        tvShortName.show()
+                        tvShortNameIV.hide()
+                    }
 
-                binding.llNotesIcon.background = ViewUtils.instance.drawCircle(
-                    ContextCompat.getColor(
-                        binding.llNotesIcon.context,
-                        ViewUtils.instance.colorGenerator()
-                    )
-                )
-
-            binding.mainCardView.setOnClickListener {
-
-                    val intent = Intent(binding.mainCardView.context, PdfActivity::class.java)
-                    intent.putExtra("document", document)
-                binding.mainCardView.context.startActivity(intent)
-
+                }
             }
         }
     }
 
-    fun setData(newData: List<Document>) {
+    private fun getInitials(name: String): String {
+        var nameInitials = ""
+        val nameList = name.toCharArray()
+        if (nameList.isNotEmpty()) {
+            for (item in nameList) {
+                if (item.isUpperCase()) {
+                    nameInitials += item.toString()
+                }
+            }
+        }
+        return nameInitials
+    }
+
+    fun setData(newData: List<String>) {
+
         val recipesDiffUtil =
-            DocumentDiffUtil(doc, newData)
+            DocumentDiffUtil(list, newData)
         val diffUtilResult = DiffUtil.calculateDiff(recipesDiffUtil)
-        doc = newData
+        list = newData
         diffUtilResult.dispatchUpdatesTo(this)
+
+    }
+
+    fun setSelection(index: Int) {
+
+
     }
 }

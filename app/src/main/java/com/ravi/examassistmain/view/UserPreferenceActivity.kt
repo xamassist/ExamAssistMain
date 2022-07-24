@@ -1,47 +1,243 @@
 package com.ravi.examassistmain.view
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.viewpager.widget.ViewPager
 import com.ravi.examassistmain.R
-import com.ravi.examassistmain.databinding.ActivitySplashBinding
+import com.ravi.examassistmain.animation.EALoader
 import com.ravi.examassistmain.databinding.ActivityUserPreferenceBinding
-import com.ravi.examassistmain.utils.UserPreferenceFragment
+import com.ravi.examassistmain.utils.*
+import com.ravi.examassistmain.viewmodel.UserPreferenceViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+
+@AndroidEntryPoint
 class UserPreferenceActivity : AppCompatActivity() {
+    private val preferenceViewModel by lazy { ViewModelProvider(this)[UserPreferenceViewModel::class.java] }
+
     private lateinit var binding: ActivityUserPreferenceBinding
+    private var prefUniversityList = listOf<String>()
+    private var prefBranchList = listOf<String>()
+    private var prefSemesterList = listOf<String>()
+    private var valueLoadCount = MutableLiveData(0)
+    private var loader: EALoader? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityUserPreferenceBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.userPrefVP.adapter = PageAdapter(supportFragmentManager)
+        fetchData()
+        binding.btnContinue.setOnClickListener {
+            fetchData()
+            val currentItem = binding.userPrefVP.currentItem
+            if (currentItem >= 2) {
+                return@setOnClickListener
+            }
+            binding.userPrefVP.currentItem = currentItem + 1
+
+        }
+        initObservers()
+        // loader = EALoader(binding.root.context)
     }
-    class PageAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
+
+    var selectedArray = mutableListOf(-1, -1, -1)
+    var currentFragment = 0
+
+    private fun fetchData() {
+        lifecycleScope.launch {
+            preferenceViewModel.getPreference()
+        }
+    }
+
+    var areAllSelected = false
+
+    fun updateBottomBars() {
+        when (currentFragment) {
+            0 -> {
+
+                binding.bar1.background =
+                    ContextCompat.getDrawable(this, R.drawable.solid_orange_circle_bg)
+                binding.bar2.background =
+                    ContextCompat.getDrawable(this, R.drawable.solid_gray_circle_bg)
+                binding.bar3.background =
+                    ContextCompat.getDrawable(this, R.drawable.solid_gray_circle_bg)
+
+                binding.bar1.show()
+                binding.bar2.show()
+                binding.bar3.show()
+                binding.barIV1.disappear()
+                binding.barIV2.disappear()
+                binding.barIV3.disappear()
+
+            }
+            1 -> {
+                binding.barIV1.background =
+                    ContextCompat.getDrawable(this, R.drawable.solid_purple_circle_bg)
+                binding.bar2.background =
+                    ContextCompat.getDrawable(this, R.drawable.solid_orange_circle_bg)
+                binding.bar3.background =
+                    ContextCompat.getDrawable(this, R.drawable.solid_gray_circle_bg)
+                binding.bar1.disappear()
+                binding.bar2.show()
+                binding.bar3.show()
+                binding.barIV1.show()
+                binding.barIV2.disappear()
+                binding.barIV3.disappear()
+            }
+            2 -> {
+                binding.barIV1.background =
+                    ContextCompat.getDrawable(this, R.drawable.solid_purple_circle_bg)
+                binding.barIV2.background =
+                    ContextCompat.getDrawable(this, R.drawable.solid_purple_circle_bg)
+                binding.bar3.background =
+                    ContextCompat.getDrawable(this, R.drawable.solid_orange_circle_bg)
+
+                binding.bar1.disappear()
+                binding.bar2.disappear()
+                binding.bar3.show()
+                binding.barIV1.show()
+                binding.barIV2.show()
+                binding.barIV3.disappear()
+            }
+        }
+        areAllSelected = checkIfAllItemSelected()
+        if (areAllSelected) {
+            binding.btnContinue.text = "Let's Start!"
+            binding.barIV3.show()
+            binding.bar3.disappear()
+            binding.barIV3.background =
+                ContextCompat.getDrawable(this, R.drawable.solid_orange_circle_bg)
+
+
+        }
+    }
+
+    fun saveUserPreference(){
+        preferenceViewModel.readUser.observe(this){
+            if(it.isNullOrEmpty()){
+                showToast(binding.root,"no userdata found")
+            }else{
+                showToast(binding.root,it.first()?.userName?:"name")
+            }
+            val user = it
+            user.first()?.university = selectedArray[0].toString()
+            user.first()?.branch = selectedArray[1].toString()
+            user.first()?.semester = selectedArray[2]
+            user.first()?.let { it1 -> preferenceViewModel.updateUserInRoomDB(it1) }
+        }
+
+    }
+
+    fun checkIfAllItemSelected(): Boolean {
+        if (selectedArray.first() != -1) {
+            if (selectedArray[1] != -1) {
+                if (selectedArray[2] != -1) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    private fun initObservers() {
+        preferenceViewModel.preferenceResponse.observe(this) { list ->
+            list?.let { result ->
+                when (list) {
+                    is NetworkResult.Success -> {
+                        loader?.dismiss()
+                        result.data?.let {
+                            val preferenceData =
+                                formPreferenceData(it as HashMap<String, List<String>>)
+
+
+                            binding.userPrefVP.adapter = preferenceData?.let { it1 ->
+                                PageAdapter(
+                                    supportFragmentManager,
+                                    it1
+                                )
+                            }
+                        }
+                    }
+                    is NetworkResult.Error -> {
+                        loader?.dismiss()
+                        result.message?.let { showToast(binding.root, it) }
+                    }
+                    is NetworkResult.Loading -> {
+                        loader?.show()
+                    }
+                }
+            }
+        }
+
+
+        binding.userPrefVP.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrollStateChanged(state: Int) {}
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+                if (currentFragment !== position) {
+                    
+                    currentFragment = position
+                    updateBottomBars()
+                }
+            }
+
+            override fun onPageSelected(position: Int) {}
+        })
+    }
+
+    private fun formPreferenceData(preferenceMap: HashMap<String, List<String>>): UserPreference? {
+        val universityList = preferenceMap["university"]
+        val branchList = preferenceMap["branch"]
+        val semesterList = preferenceMap["semester"]
+
+        val prefTitleList = listOf("University", "Branch", "Semester")
+        val prefDataList = listOf(universityList, branchList, semesterList)
+        return UserPreference(prefTitleList, prefDataList as List<List<String>>)
+    }
+
+    class PageAdapter(
+        fm: FragmentManager,
+        private val prefData: UserPreference,
+    ) : FragmentPagerAdapter(fm) {
         override fun getCount(): Int {
-            return 3
+            return prefData.nameList.size
         }
 
         override fun getItem(position: Int): Fragment {
-            when(position) {
+            return when (position) {
                 0 -> {
-                    return UserPreferenceFragment()
+                    UserPreferenceFragment.newInstance(
+                        prefData.nameList.first(),
+                        prefData.preList.first()
+                    )
                 }
                 1 -> {
-                    return UserPreferenceFragment()
+                    UserPreferenceFragment.newInstance(prefData.nameList[1], prefData.preList[1])
                 }
                 2 -> {
-                    return UserPreferenceFragment()
+                    UserPreferenceFragment.newInstance(prefData.nameList[2], prefData.preList[2])
                 }
                 else -> {
-                    return UserPreferenceFragment()
+                    UserPreferenceFragment.newInstance(
+                        prefData.nameList.first(),
+                        prefData.preList.first()
+                    )
                 }
             }
         }
 
         override fun getPageTitle(position: Int): CharSequence? {
-            when(position) {
+            when (position) {
                 0 -> {
                     return "Tab 1"
                 }
@@ -57,3 +253,5 @@ class UserPreferenceActivity : AppCompatActivity() {
 
     }
 }
+
+data class UserPreference(val nameList: List<String>, val preList: List<List<String>>)

@@ -27,7 +27,7 @@ class MainViewModel @Inject constructor(
     /** ROOM DATABASE */
 
     //val readDocument: LiveData<List<DocumentEntity>> = repository.local.readDocument().asLiveData()
-    val readRecipes: LiveData<List<Document>> = repository.local.readDocument().asLiveData()
+    val readDocs: LiveData<List<Document>> = repository.local.readDocument().asLiveData()
     private fun insertDocument(document: Document) =
         viewModelScope.launch(Dispatchers.IO) {
             repository.local.insertRecipes(document)
@@ -63,7 +63,6 @@ class MainViewModel @Inject constructor(
         // val query: Query =
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private suspend fun getDocumentSaveCall(docType: Int = 0) {
         documentResponse.value = NetworkResult.Loading()
             try {

@@ -1,28 +1,32 @@
 package com.ravi.examassistmain.utils
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.ravi.examassistmain.R
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.ravi.examassistmain.adapters.UserPreferenceAdapter
 import com.ravi.examassistmain.databinding.FragmentUserPreferenceBinding
+import com.ravi.examassistmain.view.UserPreferenceActivity
 import java.io.Serializable
 
 private const val PREFERENCE_TITLE = "pref_title"
 private const val ITEM_LIST = "item_list"
 
-class UserPreferenceFragment : Fragment() {
+class UserPreferenceFragment : Fragment(), PreferenceSelectionListener {
     private var preferenceTitle: String? = null
-    private var itemList: List<String>? = null
+    private var itemList = mutableListOf<String>()
+    private val adapter by lazy { UserPreferenceAdapter(itemList, this) }
 
-    private lateinit var bindingSignIn: FragmentUserPreferenceBinding
+    private lateinit var binding: FragmentUserPreferenceBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             preferenceTitle = it.getString(PREFERENCE_TITLE)
-            itemList = it.getSerializable(ITEM_LIST) as List<String>
+            itemList = it.getSerializable(ITEM_LIST) as MutableList<String>
         }
     }
 
@@ -31,16 +35,25 @@ class UserPreferenceFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        bindingSignIn = FragmentUserPreferenceBinding.inflate(inflater, container, false)
-        return bindingSignIn.root
+        binding = FragmentUserPreferenceBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-      bindingSignIn.tvTitle.text = preferenceTitle
-
-
+        binding.tvTitle.text = preferenceTitle
+        binding.rvUserPreference.layoutManager =
+            LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+        binding.rvUserPreference.adapter = adapter
+        val distinctList = itemList.distinct()
+        adapter.setData(distinctList)
+        binding.tvTitle
     }
+
+    private fun getPreferenceData() {
+        //preferenceViewModel.getPreference(PreferenceType.UNIVERSITY)
+    }
+
     companion object {
 
         @JvmStatic
@@ -53,4 +66,26 @@ class UserPreferenceFragment : Fragment() {
                 }
             }
     }
+
+    override fun selectedIndex(index: Int) {
+        adapter.notifyDataSetChanged()
+        var fragIndex = 0
+        if (preferenceTitle.equals("University")) {
+            fragIndex = 0
+        }
+        if (preferenceTitle.equals("Branch")) {
+            fragIndex = 1
+        }
+        if (preferenceTitle.equals("Semester")) {
+            fragIndex = 2
+        }
+        (activity as UserPreferenceActivity?)?.selectedArray?.set(fragIndex, index)
+        (activity as UserPreferenceActivity?)?.currentFragment = fragIndex
+        (activity as UserPreferenceActivity?)?.updateBottomBars()
+    }
+
+}
+
+interface PreferenceSelectionListener {
+    fun selectedIndex(index: Int)
 }

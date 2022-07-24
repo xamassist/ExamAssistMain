@@ -36,6 +36,9 @@ class LocalDataSource @Inject constructor(
     suspend fun insertUser(documentEntity: EAUsers) {
         userDao.insert(documentEntity)
     }
+    suspend fun updateUser(documentEntity: EAUsers) {
+        userDao.update(documentEntity)
+    }
 
      fun getEAUser(): Flow<List<EAUsers?>>{
         return userDao.getUser()

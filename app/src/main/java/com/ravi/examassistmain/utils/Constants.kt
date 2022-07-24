@@ -23,6 +23,12 @@ class Constants {
         const val DB_NAME = "exam_assist_db"
         const val USER_COLLECTION = "users"
         const val DOCUMENT_COLLECTION = "products"
+        const val USER_PREFERENCE = "user_preferences"
+        const val PREFERENCE = "preference"
+
+        const val UNIVERSITY = "university"
+        const val BRANCH = "branch"
+        const val SEMESTER = "semester"
 
 
 
