@@ -3,17 +3,31 @@
 
     <item
         android:id="@+id/nav_Home"
-        android:icon="@drawable/ic_download"
-        android:title="Home"/>
+        android:icon="@drawable/home"
+        android:title="@string/home"/>
 
-<!--    <item-->
-<!--        android:id="@+id/nav_dashBoard"-->
-<!--        android:icon="@drawable/ic_video"-->
-<!--        android:title="DashBoard"/>-->
-
-<!--    <item-->
-<!--        android:id="@+id/nav_ledger"-->
-<!--        android:icon="@drawable/ic_location"-->
-<!--        android:title="Ledger"/>-->
-
+    <item
+        android:id="@+id/nav_download"
+        android:icon="@drawable/download"
+        android:title="@string/downloads"/>
+    <item
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/profile"
+        android:title="@string/profile"/>
+    <item
+        android:id="@+id/nav_lab_resource"
+        android:icon="@drawable/lab_resource"
+        android:title="@string/lab_resources"/>
+    <item
+        android:id="@+id/nav_about_us"
+        android:icon="@drawable/about_us"
+        android:title="@string/about_us"/>
+    <item
+        android:id="@+id/nav_privacy_policy"
+        android:icon="@drawable/privacy_policy"
+        android:title="@string/privacy_policy"/>
+    <item
+        android:id="@+id/nav_settings"
+        android:icon="@drawable/settings"
+        android:title="@string/settings"/>
 </menu>

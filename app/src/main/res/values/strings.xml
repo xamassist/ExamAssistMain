@@ -104,7 +104,15 @@
 
     <string name="dark_pdf">Dark theme for PDF</string>
     <string name="keep_screen_on">Keep the screen on</string>
-    <!-- TODO: Remove or change this placeholder text -->
+
+    <string name="nav_open">Open</string>
+    <string name="nav_close">Close</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="home">Home</string>
+    <string name="downloads">Downloads</string>
+    <string name="profile">Profile</string>
+    <string name="lab_resources">Lab Resources</string>
+    <string name="about_us">About Us</string>
+    <string name="privacy_policy">Privacy Policy</string>
 
 </resources>

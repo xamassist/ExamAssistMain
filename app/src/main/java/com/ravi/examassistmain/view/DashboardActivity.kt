@@ -1,18 +1,18 @@
 package com.ravi.examassistmain.view
 
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
-import com.ravi.examassistmain.view.fragments.NotesFragment
-import com.ravi.examassistmain.view.fragments.SyllabusFragment
 import com.ravi.examassistmain.R
-import com.ravi.examassistmain.viewmodel.MainViewModel
 import com.ravi.examassistmain.databinding.ActivityDashboardBinding
 import com.ravi.examassistmain.databinding.BaseLayoutBinding
+import com.ravi.examassistmain.view.fragments.NotesFragment
 import com.ravi.examassistmain.view.fragments.PapersFragment
+import com.ravi.examassistmain.view.fragments.SyllabusFragment
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 
 @AndroidEntryPoint
@@ -20,6 +20,8 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDashboardBinding
     private lateinit var bindingBase: BaseLayoutBinding
     private lateinit var context: Context
+    var actionBarDrawerToggle: ActionBarDrawerToggle? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +30,16 @@ class DashboardActivity : AppCompatActivity() {
         bindingBase = binding.baseLayout
         context = this
         setContentView(view)
+
+        actionBarDrawerToggle =
+            ActionBarDrawerToggle(this,binding.drawerLayout, R.string.nav_open, R.string.nav_close)
+
+        actionBarDrawerToggle?.let {
+            binding.drawerLayout.addDrawerListener(it)
+        }
+        actionBarDrawerToggle?.syncState()
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         bindingBase.bottomNavigationView.background = null
         bindingBase.bottomNavigationView.menu.getItem(3).isEnabled = false
 
@@ -41,6 +53,15 @@ class DashboardActivity : AppCompatActivity() {
             loadFragments(fragment)
             return@setOnItemSelectedListener true
         }
+
+        binding.baseLayout.ivMenu.setOnClickListener {
+            if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                binding.drawerLayout.closeDrawer(GravityCompat.START);
+            } else {
+                binding.drawerLayout.openDrawer(GravityCompat.START);
+            }
+        }
+
         loadFragments(NotesFragment())
     }
 
