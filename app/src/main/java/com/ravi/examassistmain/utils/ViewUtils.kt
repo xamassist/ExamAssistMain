@@ -18,32 +18,52 @@ class ViewUtils {
         return shape
     }
 
-    fun colorGenerator(): Int {
-        val colorArray = arrayListOf(
-            R.color.red,
-            R.color.ea_blue_900,
-            R.color.green,
-            R.color.teal_700,
-            R.color.ea_amber_A700,
-            R.color.ea_brown_900,
-            R.color.ea_yellow_900,
-            R.color.purple_700,
-        )
-        return colorArray.random()
-    }
+
     fun colorGenerator(index:Int): Int {
-        val position = index%7
-        val colorArray = arrayListOf(
-            R.color.red,
-            R.color.ea_blue_900,
-            R.color.green,
-            R.color.teal_700,
-            R.color.ea_amber_A700,
-            R.color.ea_brown_900,
-            R.color.ea_yellow_900,
-            R.color.purple_700,
-        )
-        return colorArray[position]
+        var position =index
+        if(position>7){
+            position =index%7
+        }
+       return when(position){
+            0->{
+                R.color.red
+            }
+            1->{
+                R.color.ea_blue_900
+            }
+            2->{
+                R.color.green
+            }
+            3->{
+                R.color.teal_700
+            }
+            4->{
+                R.color.ea_amber_A700
+            }
+            5->{
+                R.color.ea_brown_900
+            }
+
+            6->{
+                R.color.ea_yellow_900
+            }
+            7->{
+                R.color.purple_700
+            }
+
+           else -> R.color.purple_700
+       }
+//        val colorArray = arrayListOf(
+//            R.color.red,
+//            R.color.ea_blue_900,
+//            R.color.green,
+//            R.color.teal_700,
+//            R.color.ea_amber_A700,
+//            R.color.ea_brown_900,
+//            R.color.ea_yellow_900,
+//            R.color.purple_700,
+//        )
+
     }
 
 }

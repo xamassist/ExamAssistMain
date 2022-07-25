@@ -30,9 +30,8 @@
 
             <Spinner
                 android:id="@+id/sp_subjects"
-                style="@style/spinner_style"
 
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_toLeftOf="@+id/iv_search"
                 android:layout_toRightOf="@+id/iv_menu"
@@ -47,7 +46,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginStart="12dp"
                 android:layout_toLeftOf="@+id/iv_dot_menu"
-                android:padding="3dp"
+                android:padding="5dp"
                 android:src="@drawable/ic_search_2" />
 
             <ImageView

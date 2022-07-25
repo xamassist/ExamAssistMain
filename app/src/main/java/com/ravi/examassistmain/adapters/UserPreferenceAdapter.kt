@@ -1,10 +1,12 @@
 package com.ravi.examassistmain.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.ravi.examassistmain.R
 import com.ravi.examassistmain.databinding.PreferenceOptionRowBinding
 import com.ravi.examassistmain.utils.*
 
@@ -32,8 +34,11 @@ class UserPreferenceAdapter(var list: List<String>?,val userPrefListener :Prefer
             binding.apply {
                 tvFullName.text = name
                 tvShortName.text = getInitials(name)
-                tvShortName.setBackgroundColor(ViewUtils.instance.colorGenerator(position))
-                tvShortNameIV.setBackgroundColor(ViewUtils.instance.colorGenerator(position))
+                val bgColor = ViewUtils.instance.colorGenerator(position)
+                Log.v("colorr",bgColor.toString())
+//              val color
+                tvShortName.setBackgroundColor(binding.root.resources.getColor(bgColor))
+                tvShortNameIV.setBackgroundColor(binding.root.resources.getColor(bgColor))
                 if (selectedIndex == position) {
                     tvShortName.hide()
                     tvShortNameIV.show()

@@ -172,7 +172,6 @@ class UserPreferenceActivity : AppCompatActivity() {
                     }
                     is NetworkResult.Error -> {
                         LoadingUtils.hideDialog()
-                        result.message?.let { showToast(binding.root, it) }
                     }
                     is NetworkResult.Loading -> {
                         LoadingUtils.showDialog(this,false)
@@ -181,11 +180,7 @@ class UserPreferenceActivity : AppCompatActivity() {
             }
         }
         preferenceViewModel.readUser.observe(this){
-            if(it.isNullOrEmpty()){
-                showToast(binding.root,"no userdata found")
-            }else{
-                showToast(binding.root,it.first()?.userName?:"name")
-            }
+
             val user = it
             user.first()?.university = selectedArray[0].toString()
             user.first()?.branch = selectedArray[1].toString()

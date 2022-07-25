@@ -141,7 +141,6 @@
         android:layout_height="60dp"
         android:layout_margin="34dp"
         android:backgroundTint="@color/colorPrimary"
-        android:drawableEnd="@drawable/ic_chevron_right"
         android:fontFamily="@font/nunito_bold"
         android:text="Continue"
         android:textColor="@color/white"

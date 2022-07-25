@@ -2,6 +2,9 @@ package com.ravi.examassistmain.view
 
 import android.content.Context
 import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -22,7 +25,7 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var context: Context
     var actionBarDrawerToggle: ActionBarDrawerToggle? = null
 
-
+    var subjectList = mutableListOf("Electrical Engineering", "Electrical Machine")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDashboardBinding.inflate(layoutInflater)
@@ -32,7 +35,7 @@ class DashboardActivity : AppCompatActivity() {
         setContentView(view)
 
         actionBarDrawerToggle =
-            ActionBarDrawerToggle(this,binding.drawerLayout, R.string.nav_open, R.string.nav_close)
+            ActionBarDrawerToggle(this, binding.drawerLayout, R.string.nav_open, R.string.nav_close)
 
         actionBarDrawerToggle?.let {
             binding.drawerLayout.addDrawerListener(it)
@@ -61,9 +64,34 @@ class DashboardActivity : AppCompatActivity() {
                 binding.drawerLayout.openDrawer(GravityCompat.START);
             }
         }
-
+        setSpinner(subjectList)
         loadFragments(NotesFragment())
     }
+
+    private fun setSpinner(listCat: List<String>) {
+        val spinnerArrayAdapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_dropdown_item,
+            listCat
+        )
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+
+        binding.baseLayout.spSubjects?.apply {
+            adapter = spinnerArrayAdapter
+
+            setSelection(selectedCatIndex)
+            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) = Unit
+                override fun onItemSelected(
+                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
+                ) {
+                    selectedCatIndex = position
+                }
+            }
+        }
+    }
+    var selectedCatIndex = -1
 
     override fun onBackPressed() {
         if (bindingBase.bottomNavigationView.selectedItemId == R.id.navigation_notes) {

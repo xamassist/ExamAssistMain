@@ -32,11 +32,11 @@ class NotesAdapter : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.setData(doc[position])
+        holder.setData(doc[position],position)
     }
 
     inner class ViewHolder(val binding: NotesListBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun setData(document: Document) {
+        fun setData(document: Document,position: Int) {
             binding.docName.text = document.documentTitle
             if (document.documentTitle?.isNotBlank() == true) {
                 val firstLetter = document.documentTitle?.substring(0, 1)
@@ -46,7 +46,7 @@ class NotesAdapter : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
                 binding.llNotesIcon.background = ViewUtils.instance.drawCircle(
                     ContextCompat.getColor(
                         binding.llNotesIcon.context,
-                        ViewUtils.instance.colorGenerator()
+                        ViewUtils.instance.colorGenerator(position)
                     )
                 )
 
