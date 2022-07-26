@@ -185,7 +185,11 @@ class UserPreferenceActivity : AppCompatActivity() {
             user.first()?.university = selectedArray[0].toString()
             user.first()?.branch = selectedArray[1].toString()
             user.first()?.semester = selectedArray[2]
-            user.first()?.let { it1 -> preferenceViewModel.updateUserInRoomDB(it1) }
+            user.first()?.let { it1 ->
+                preferenceViewModel.updateUserInRoomDB(it1)
+                preferenceViewModel.saveUserDataToServer(it1)
+            }
+
         }
 
 

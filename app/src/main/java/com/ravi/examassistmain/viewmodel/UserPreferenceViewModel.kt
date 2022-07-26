@@ -1,6 +1,7 @@
 package com.ravi.examassistmain.viewmodel
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import com.ravi.examassistmain.data.Repository
@@ -20,13 +21,14 @@ class UserPreferenceViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {
 
-    val readUser: LiveData<List<EAUsers?>> = repository.local.getEAUser().asLiveData()
+    var readUser: LiveData<List<EAUsers?>> = repository.local.getEAUser().asLiveData()
     fun updateUserInRoomDB(user: EAUsers) =
         viewModelScope.launch(Dispatchers.IO) {
             repository.local.updateUser(user)
         }
     /** Firestore */
     var preferenceResponse: MutableLiveData<NetworkResult<HashMap<*,*>>> = MutableLiveData()
+    var userSaveResponse: MutableLiveData<NetworkResult<Boolean>> = MutableLiveData()
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun getPreference() = viewModelScope.launch {
@@ -34,14 +36,21 @@ class UserPreferenceViewModel @Inject constructor(
     }
     fun getUserDataFromRoom() =
         viewModelScope.launch(Dispatchers.IO) {
-            repository.local.getEAUser()
+          readUser=  repository.local.getEAUser().asLiveData()
         }
 
 
     private fun formDummyQuery() {
         // val query: Query =
     }
-
+    /** firebase Data 1. save user data*/
+    fun saveUserDataToServer(eaUser: EAUsers) = viewModelScope.launch(Dispatchers.IO) {
+        repository.remote.saveUserData(eaUser)?.addOnSuccessListener {
+            userSaveResponse.postValue(NetworkResult.Success(true))
+        }?.addOnFailureListener{
+            userSaveResponse.postValue(NetworkResult.Error("Unable to save user's data"))
+        }
+    }
     private suspend fun getPreferenceSafeCall() {
 
         try {

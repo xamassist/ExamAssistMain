@@ -20,8 +20,12 @@ class Constants {
 
         const val DOCUMENT_TABLE = "document_table"
         const val USER_TABLE = "user_table"
+        const val SUBJECT_TABLE = "subject_table"
+
+
         const val DB_NAME = "exam_assist_db"
         const val USER_COLLECTION = "users"
+        const val SUBJECT_COLLECTION = "subject"
         const val DOCUMENT_COLLECTION = "products"
         const val USER_PREFERENCE = "user_preferences"
         const val PREFERENCE = "preference"

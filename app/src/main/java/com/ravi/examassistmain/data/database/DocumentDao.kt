@@ -26,7 +26,6 @@ interface DocumentDao {
     fun getDocument(docId: String): Document
     @Delete
     suspend fun deleteDocument(entity: Document)
-
     @Query("DELETE FROM document_table")
     suspend fun deleteAllDocuments()
 

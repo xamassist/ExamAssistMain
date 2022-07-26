@@ -39,6 +39,10 @@ object DatabaseModule {
 
     @Singleton
     @Provides
+    fun provideSubjectDao(database: DocumentDatabase) = database.subjectDao()
+
+    @Singleton
+    @Provides
     fun providesFirestoreInstance(): FirebaseFirestore {
 
         return FirebaseFirestore.getInstance()

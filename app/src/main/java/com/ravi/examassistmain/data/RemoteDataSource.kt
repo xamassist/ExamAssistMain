@@ -10,6 +10,7 @@ import com.ravi.examassistmain.utils.Constants.Companion.BRANCH
 import com.ravi.examassistmain.utils.Constants.Companion.DOCUMENT_COLLECTION
 import com.ravi.examassistmain.utils.Constants.Companion.PREFERENCE
 import com.ravi.examassistmain.utils.Constants.Companion.SEMESTER
+import com.ravi.examassistmain.utils.Constants.Companion.SUBJECT_COLLECTION
 import com.ravi.examassistmain.utils.Constants.Companion.UNIVERSITY
 import com.ravi.examassistmain.utils.Constants.Companion.USER_COLLECTION
 import com.ravi.examassistmain.utils.Constants.Companion.USER_PREFERENCE
@@ -35,6 +36,17 @@ class RemoteDataSource @Inject constructor(
     fun getUsers(userId: String): Query? {
         return try {
             fireStore.collection(USER_COLLECTION).whereEqualTo("doc_type", userId)
+
+        } catch (e: Exception) {
+            null
+        }
+    }
+    fun getSubjects(branch: String,semester:Int,university:Int): Query? {
+        return try {
+            fireStore.collection(SUBJECT_COLLECTION)
+                .whereEqualTo("branch", branch)
+                .whereEqualTo("semester",semester)
+                .whereEqualTo("university",university)
 
         } catch (e: Exception) {
             null

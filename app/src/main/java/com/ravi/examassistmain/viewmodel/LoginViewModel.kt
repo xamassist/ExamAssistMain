@@ -16,9 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val repository: Repository,
-    application: Application
-) : AndroidViewModel(application) {
+    private val repository: Repository)
+    : ViewModel() {
     var readUser = repository.local.getEAUser().asLiveData()
 
     /** Room Data*/
@@ -90,7 +89,7 @@ class LoginViewModel @Inject constructor(
         repository.remote.saveUserData(eaUser)?.addOnSuccessListener {
             userSaveResponse.postValue(NetworkResult.Success(true))
           val response =   insertUserDataInRoom(eaUser)
-            if(response.isCancelled){
+            if(response.isCompleted){
                 Log.v("FirstTimeUser", "Save to room")
             }else if(response.isCancelled) {
                 Log.v("FirstTimeUser", "failed toSave to room")
