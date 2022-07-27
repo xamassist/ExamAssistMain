@@ -6,10 +6,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.ravi.examassistmain.data.Repository
 import com.ravi.examassistmain.models.Document
 import com.ravi.examassistmain.utils.NetworkResult
@@ -29,6 +26,7 @@ class PdfViewModel @Inject constructor(
     /** ROOM DATABASE */
 
   var getPdfDocument: MutableLiveData<Document> = MutableLiveData()
+var readPdfDocument: LiveData<List<Document>> = repository.local.readDocument().asLiveData()
 
     private fun insertDocument(document: Document) =
         viewModelScope.launch(Dispatchers.IO) {
@@ -38,6 +36,7 @@ class PdfViewModel @Inject constructor(
       fun getDoc(documentId: String) {
     viewModelScope.launch(Dispatchers.IO) {
         getPdfDocument.postValue(repository.local.getDocument(documentId))
+        repository.local.getEAUser().asLiveData()
    }
 }
     private fun insertDocumentList (documentList: List<Document>) =

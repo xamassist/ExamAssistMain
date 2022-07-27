@@ -1,10 +1,8 @@
 package com.ravi.examassistmain.viewmodel
 
-import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
 import com.ravi.examassistmain.data.Repository
-import com.ravi.examassistmain.models.Document
 import com.ravi.examassistmain.models.EAUsers
 import com.ravi.examassistmain.utils.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,16 +49,15 @@ class LoginViewModel @Inject constructor(
                         eaUserList.add(doc)
                     }
                 }
+                val user = eaUserList.firstOrNull()
+                user?.let {
+                    offlineCacheUser(eaUserList.first())
+                }
                 userResponse.value = handleDocumentResponse(eaUserList)
             }?.addOnFailureListener {
                 userResponse.value = NetworkResult.Error("Something went wrong")
             }
-            val doc = userResponse.value?.data
-            if (doc!=null) {
-                offlineCacheDocuments(doc)
-            } else {
-                userResponse.value = NetworkResult.Error("Documents data was null.")
-            }
+
         } catch (e: Exception) {
             userResponse.value = NetworkResult.Error("Documents not found.")
         }
@@ -80,7 +77,7 @@ class LoginViewModel @Inject constructor(
         return NetworkResult.Error("No files found")
     }
 
-    private fun offlineCacheDocuments(docList: EAUsers) {
+    private fun offlineCacheUser(docList: EAUsers) {
         insertUserDataInRoom(docList)
     }
 

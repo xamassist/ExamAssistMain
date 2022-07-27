@@ -17,6 +17,7 @@ import com.ravi.examassistmain.adapters.NotesAdapter
 import com.ravi.examassistmain.models.Document
 import com.ravi.examassistmain.utils.NetworkListener
 import com.ravi.examassistmain.utils.NetworkResult
+import com.ravi.examassistmain.utils.observeOnce
 import com.ravi.examassistmain.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -65,7 +66,8 @@ class PapersFragment : Fragment() {
 
                     is NetworkResult.Success -> {
                         if (!res.data.isNullOrEmpty()) {
-                            mAdapter.setData(res.data)
+                            val filteredList = res.data.filter { it.documentType==1 }
+                            mAdapter.setData(filteredList)
                             Log.v("NotesAdapter", "data received!!! ${res.data.first()}")
                         } else {
                             Log.v(
@@ -87,7 +89,15 @@ class PapersFragment : Fragment() {
     }
     private fun readDatabase() {
         lifecycleScope.launch {
-            requestApiData()
+            mainViewModel.getDocumentByDocType(1)
+            mainViewModel.readDocs.observeOnce(viewLifecycleOwner) { database ->
+                if (database.isNotEmpty()) {
+                    Log.d("RecipesFragment", "readDatabase called!")
+                    mAdapter.setData(database)
+                } else {
+                    requestApiData()
+                }
+            }
         }
     }
     private fun setAdapter(){

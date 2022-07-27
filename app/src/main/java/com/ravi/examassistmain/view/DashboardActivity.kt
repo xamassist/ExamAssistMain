@@ -50,11 +50,8 @@ class DashboardActivity : AppCompatActivity() {
         setContentView(view)
 
         setSetSideNavigation()
-        setSpinner(subjectList)
         loadFragments(NotesFragment())
-        binding.baseLayout.fab.setOnClickListener{
-            setData()
-        }
+        setData()
     }
     private fun setData(){
         viewModel.readUser.observeOnce(this){
@@ -75,6 +72,8 @@ class DashboardActivity : AppCompatActivity() {
                 if (subjects.isNotEmpty()) {
                     Log.d("RecipesFragment", "readDatabase called!")
                     //mAdapter.setData(database)
+                    val subjectList = subjects.map { it.subjectName }
+                    setSpinner(subjectList)
                 } else {
                     requestApiData(branch,semester,university)
                 }
@@ -94,6 +93,8 @@ class DashboardActivity : AppCompatActivity() {
                     is NetworkResult.Success -> {
                         if (!res.data.isNullOrEmpty()) {
                            // mAdapter.setData(res.data)
+                            val subjectList = res.data.map { it.subjectName }
+                            setSpinner(subjectList)
                             Log.v("NotesAdapter", "data received!!! ${res.data.first()}")
                         } else {
                             Log.v(
@@ -156,7 +157,7 @@ class DashboardActivity : AppCompatActivity() {
       }
     }
 
-    private fun setSpinner(listCat: List<String>) {
+    private fun setSpinner(listCat: List<String?>) {
         val spinnerArrayAdapter = ArrayAdapter(
             this,
             android.R.layout.simple_spinner_dropdown_item,

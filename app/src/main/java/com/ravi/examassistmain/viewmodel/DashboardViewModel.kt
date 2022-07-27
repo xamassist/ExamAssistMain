@@ -40,24 +40,21 @@ class DashboardViewModel @Inject constructor(
                     val doc = it.toObject(Subjects::class.java)
 
                     if (doc != null) {
-                        Log.v("getSubjects",doc.branch?:"bbb")
+                        Log.v("getSubjects", doc.branch ?: "bbb")
                         eaSubjectList.add(doc)
                     }
+                     }
+                if (eaSubjectList!=null) {
+                    offlineSubjectCache(eaSubjectList)
                 }
                 subjectResponse.value = handleSubjectResponse(eaSubjectList)
+
             }?.addOnFailureListener {
                 Log.v("getSubjects",it.localizedMessage)
 
                 subjectResponse.value = NetworkResult.Error("Something went wrong")
             }
-            val doc = subjectResponse.value?.data
-            if (doc!=null) {
-                offlineSubjectCache(doc)
-            } else {
-                Log.v("getSubjects","error")
 
-                subjectResponse.value = NetworkResult.Error("Documents data was null.")
-            }
         } catch (e: Exception) {
             Log.v("getSubjects","error")
 

@@ -30,10 +30,12 @@ import com.ravi.examassistmain.models.Document
 import com.ravi.examassistmain.models.PdfPages
 import com.ravi.examassistmain.utils.Constants.Companion.DB_NAME
 import com.ravi.examassistmain.utils.LoadingUtils
+import com.ravi.examassistmain.utils.observeOnce
 import com.ravi.examassistmain.viewmodel.MainViewModel
 import com.shockwave.pdfium.PdfPasswordException
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.observeOn
 import kotlinx.coroutines.launch
 import java.io.BufferedInputStream
 import java.io.File
@@ -240,11 +242,21 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
                     downloadPdf()
                 }
             }else{
-                downloadPdf()
+               downloadPdf()
             }
         }
     }
     private fun getData() {
+        lifecycleScope.launch {
+            pdfViewModel.readPdfDocument.observeOnce(this@PdfActivity) { database ->
+                if (database.isNotEmpty()) {
+                    Log.d("RecipesFragment", "readDatabase called! ${database.size}")
+                    //mAdapter.setData(database)
+                } else {
+                   // requestApiData()
+                }
+            }
+        }
         document?.documentId?.let { docId ->
             pdfViewModel.getDoc(docId)
         }
@@ -395,6 +407,11 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
                 Log.d(this.localClassName, e.localizedMessage)
             }
         }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        LoadingUtils.hideDialog()
     }
 
 

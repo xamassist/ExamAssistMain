@@ -30,6 +30,9 @@ class LocalDataSource @Inject constructor(
     suspend fun getDocument(documentId: String): Document {
         return documentDao.getDocument(documentId)
     }
+    suspend fun getDocumentFromDocType(docType: Int): Flow<List<Document>> {
+        return documentDao.getDocumentFromDocType(docType)
+    }
 
     suspend fun deleteFavoriteRecipe(documentEntity: Document) {
         documentDao.deleteDocument(documentEntity)

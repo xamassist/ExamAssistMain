@@ -27,7 +27,8 @@ class MainViewModel @Inject constructor(
     /** ROOM DATABASE */
 
     //val readDocument: LiveData<List<DocumentEntity>> = repository.local.readDocument().asLiveData()
-    val readDocs: LiveData<List<Document>> = repository.local.readDocument().asLiveData()
+    var readDocs: LiveData<List<Document>> = repository.local.readDocument().asLiveData()
+    var cachedResponse: LiveData<List<Document>> = MutableLiveData()
     private fun insertDocument(document: Document) =
         viewModelScope.launch(Dispatchers.IO) {
             repository.local.insertRecipes(document)
@@ -38,6 +39,10 @@ class MainViewModel @Inject constructor(
             for (doc in documentList) {
                 repository.local.insertRecipes(doc)
             }
+        }
+     fun getDocumentByDocType(documentType: Int) =
+        viewModelScope.launch(Dispatchers.IO) {
+            readDocs = repository.local.getDocumentFromDocType(documentType).asLiveData()
         }
 
     fun deleteDocument(document: Document) =
@@ -77,16 +82,11 @@ class MainViewModel @Inject constructor(
                     }
                 }
                     documentResponse.value = handleDocumentResponse(docList)
+                    offlineCacheDocuments(docList)
                 }?.addOnFailureListener {
                     documentResponse.value = NetworkResult.Error("Something went wrong")
                 }
 
-                val doc = documentResponse.value?.data
-                if (doc != null) {
-                    offlineCacheDocuments(doc)
-                } else {
-                    documentResponse.value = NetworkResult.Error("Documents data was null.")
-                }
             } catch (e: Exception) {
                 documentResponse.value = NetworkResult.Error("Documents not found.")
             }

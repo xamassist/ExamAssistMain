@@ -15,6 +15,7 @@ interface DocumentDao {
    */
     @Query("UPDATE document_table SET pdfPath=:pdfPath WHERE documentId = :docId")
     suspend fun updateDocument(docId: String, pdfPath: String)
+
     @Query("UPDATE document_table SET documentTitle=:pdfName WHERE documentId = :docId")
     suspend fun updateName(docId: String, pdfName: String)
 
@@ -24,6 +25,10 @@ interface DocumentDao {
     //@Query("SELECT offlineData FROM news_table WHERE id =:id")
     @Query("SELECT * FROM document_table WHERE documentId =:docId")
     fun getDocument(docId: String): Document
+
+ @Query("SELECT * FROM document_table WHERE documentType =:docType")
+ fun getDocumentFromDocType(docType: Int): Flow<List<Document>>
+
     @Delete
     suspend fun deleteDocument(entity: Document)
     @Query("DELETE FROM document_table")

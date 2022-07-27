@@ -16,7 +16,7 @@ class LoadingUtils {
                     eaLoader = EALoader(context)
                     eaLoader?.let { jarvisLoader->
                         jarvisLoader.setCanceledOnTouchOutside(true)
-                        jarvisLoader.setCancelable(isCancelable)
+                        jarvisLoader.setCancelable(true)
                         jarvisLoader.show()
                     }
 

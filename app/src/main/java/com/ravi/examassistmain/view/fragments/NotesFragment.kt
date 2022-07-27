@@ -20,9 +20,11 @@ import com.ravi.examassistmain.utils.NetworkResult
 import com.ravi.examassistmain.utils.observeOnce
 import com.ravi.examassistmain.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
@@ -69,7 +71,8 @@ class NotesFragment : Fragment() {
 
                     is NetworkResult.Success -> {
                         if (!res.data.isNullOrEmpty()) {
-                            mAdapter.setData(res.data)
+                            val filteredList = res.data.filter { it.documentType==0 }
+                            mAdapter.setData(filteredList)
                             Log.v("NotesAdapter", "data received!!! ${res.data.first()}")
                         } else {
                             Log.v(
@@ -90,17 +93,18 @@ class NotesFragment : Fragment() {
         }
     }
     private fun readDatabase() {
-
-        lifecycleScope.launch {
+        mainViewModel.getDocumentByDocType(0)
             mainViewModel.readDocs.observeOnce(viewLifecycleOwner) { database ->
                 if (database.isNotEmpty()) {
                     Log.d("RecipesFragment", "readDatabase called!")
-                    mAdapter.setData(database)
+                    val filteredList = database.filter { it.documentType==0 }
+
+                    mAdapter.setData(filteredList)
                 } else {
                     requestApiData()
                 }
             }
-        }
+
     }
     private fun setAdapter(){
         notesRecyclerView?.setHasFixedSize(true)
