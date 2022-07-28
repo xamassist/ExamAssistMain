@@ -26,7 +26,7 @@ import com.github.barteksc.pdfviewer.listener.OnPageChangeListener
 import com.github.barteksc.pdfviewer.listener.OnPageErrorListener
 import com.github.barteksc.pdfviewer.util.FitPolicy
 import com.ravi.examassistmain.R
-import com.ravi.examassistmain.pdf.PdfActivity
+import com.ravi.examassistmain.view.PdfActivity
 import com.ravi.examassistmain.utils.LoadingUtils
 import com.shockwave.pdfium.PdfPasswordException
 import kotlinx.coroutines.launch

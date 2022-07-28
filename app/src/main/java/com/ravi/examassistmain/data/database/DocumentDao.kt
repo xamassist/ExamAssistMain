@@ -2,19 +2,20 @@ package com.ravi.examassistmain.data.database
 
 import androidx.room.*
 import com.ravi.examassistmain.models.Document
+import com.ravi.examassistmain.models.PdfDownloads
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DocumentDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-     fun insertDocument(document: Document)
-   /*
-    @Query("UPDATE rooms SET is_deleted=:is_deleted WHERE local_id = :local_id")
-    suspend fun deleteRoomLocal(is_deleted: String?, local_id: Long) : Int
-   */
+    fun insertDocument(document: Document)
+
     @Query("UPDATE document_table SET pdfPath=:pdfPath WHERE documentId = :docId")
-    suspend fun updateDocument(docId: String, pdfPath: String)
+    suspend fun updatemyDocument(docId: String, pdfPath: String)
+
+    @Update(entity = Document::class)
+    suspend fun updateDocument(document: Document)
 
     @Query("UPDATE document_table SET documentTitle=:pdfName WHERE documentId = :docId")
     suspend fun updateName(docId: String, pdfName: String)
@@ -26,12 +27,19 @@ interface DocumentDao {
     @Query("SELECT * FROM document_table WHERE documentId =:docId")
     fun getDocument(docId: String): Document
 
- @Query("SELECT * FROM document_table WHERE documentType =:docType")
- fun getDocumentFromDocType(docType: Int): Flow<List<Document>>
+    @Query("SELECT * FROM document_table WHERE documentType =:docType")
+    fun getDocumentFromDocType(docType: Int): Flow<List<Document>>
 
     @Delete
     suspend fun deleteDocument(entity: Document)
+
     @Query("DELETE FROM document_table")
     suspend fun deleteAllDocuments()
+
+//    @Insert(onConflict = OnConflictStrategy.REPLACE)
+//    fun insertPdfDownload(document: PdfDownloads)
+//
+//    @Query("SELECT * FROM pdf_downloads")
+//    fun readPdfDownloads(): Flow<List<PdfDownloads>>
 
 }

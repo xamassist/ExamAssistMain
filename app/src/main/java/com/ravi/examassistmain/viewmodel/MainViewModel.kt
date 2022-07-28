@@ -1,16 +1,10 @@
 package com.ravi.examassistmain.viewmodel
 
-import android.app.Application
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
-import com.google.firebase.firestore.Query
 import com.ravi.examassistmain.data.Repository
 import com.ravi.examassistmain.models.Document
-import com.ravi.examassistmain.models.Documents
 import com.ravi.examassistmain.utils.NetworkResult
 
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,13 +25,13 @@ class MainViewModel @Inject constructor(
     var cachedResponse: LiveData<List<Document>> = MutableLiveData()
     private fun insertDocument(document: Document) =
         viewModelScope.launch(Dispatchers.IO) {
-            repository.local.insertRecipes(document)
+            repository.local.insertDocument(document)
         }
 
     private fun insertDocumentList(documentList: List<Document>) =
         viewModelScope.launch(Dispatchers.IO) {
             for (doc in documentList) {
-                repository.local.insertRecipes(doc)
+                repository.local.insertDocument(doc)
             }
         }
      fun getDocumentByDocType(documentType: Int) =

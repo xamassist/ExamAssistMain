@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ravi.examassistmain.databinding.PaperListBinding
 import com.ravi.examassistmain.models.Document
-import com.ravi.examassistmain.pdf.PdfActivity
+import com.ravi.examassistmain.view.PdfActivity
 import com.ravi.examassistmain.utils.DocumentDiffUtil
 import com.ravi.examassistmain.utils.ViewUtils
 

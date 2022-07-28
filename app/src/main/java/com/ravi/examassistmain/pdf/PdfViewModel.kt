@@ -2,6 +2,7 @@ package com.ravi.examassistmain.pdf
 
 import android.app.Application
 import android.content.Context
+import android.graphics.pdf.PdfDocument
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
@@ -9,12 +10,11 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import com.ravi.examassistmain.data.Repository
 import com.ravi.examassistmain.models.Document
+import com.ravi.examassistmain.models.PdfDownloads
 import com.ravi.examassistmain.utils.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,24 +25,27 @@ class PdfViewModel @Inject constructor(
 
     /** ROOM DATABASE */
 
-  var getPdfDocument: MutableLiveData<Document> = MutableLiveData()
-var readPdfDocument: LiveData<List<Document>> = repository.local.readDocument().asLiveData()
+    var getPdfDocument: MutableLiveData<Document> = MutableLiveData()
+    var readPdfDocument: LiveData<List<Document>> =
+        repository.local.readDocument().asLiveData()
 
-    private fun insertDocument(document: Document) =
+
+     fun insertDocument(document: Document) =
         viewModelScope.launch(Dispatchers.IO) {
-           repository.local.insertRecipes(document)
+            repository.local.insertDocument(document)
         }
 
-      fun getDoc(documentId: String) {
-    viewModelScope.launch(Dispatchers.IO) {
-        getPdfDocument.postValue(repository.local.getDocument(documentId))
-        repository.local.getEAUser().asLiveData()
-   }
-}
-    private fun insertDocumentList (documentList: List<Document>) =
+    fun getDoc(documentId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            for (doc in documentList){
-                repository.local.insertRecipes(doc)
+            getPdfDocument.postValue(repository.local.getDocument(documentId))
+            repository.local.getEAUser().asLiveData()
+        }
+    }
+
+    private fun insertDocumentList(documentList: List<Document>) =
+        viewModelScope.launch(Dispatchers.IO) {
+            for (doc in documentList) {
+                repository.local.insertDocument(doc)
             }
         }
 

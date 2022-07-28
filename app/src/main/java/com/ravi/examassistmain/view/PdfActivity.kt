@@ -1,4 +1,4 @@
-package com.ravi.examassistmain.pdf
+package com.ravi.examassistmain.view
 
 import android.Manifest
 import android.app.DownloadManager
@@ -28,14 +28,11 @@ import com.ravi.examassistmain.data.database.DocumentDatabase
 import com.ravi.examassistmain.databinding.ActivityPdfBinding
 import com.ravi.examassistmain.models.Document
 import com.ravi.examassistmain.models.PdfPages
+import com.ravi.examassistmain.pdf.PdfViewModel
 import com.ravi.examassistmain.utils.Constants.Companion.DB_NAME
 import com.ravi.examassistmain.utils.LoadingUtils
-import com.ravi.examassistmain.utils.observeOnce
-import com.ravi.examassistmain.viewmodel.MainViewModel
 import com.shockwave.pdfium.PdfPasswordException
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.observeOn
 import kotlinx.coroutines.launch
 import java.io.BufferedInputStream
 import java.io.File
@@ -50,20 +47,29 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
     private lateinit var binding: ActivityPdfBinding
 
     companion object {
+        const val WATCH_TIME_SENT_DURATION: Long = 8
         const val PREFIX = "/_"
     }
     private var menuItem: MenuItem? = null
     private var permissionGranted: Boolean? = false
     private var PERMISSION_CODE = 4040
     private var isDownloadable = false
+    private var isFromDeepLink = false
     private var downloadId: Long = 0L
+    private var watchTime: Long = 0
+    private var progressRunner: Runnable? = null
+    private var progressHandler: Handler? = null
     var pdfView: PDFView? = null
+    private val uri: Uri? = null
     private var pageNumber = 0
     private var totalPageCount = 0
     private var pdfPassword: String? = null
     private var pdfFileName = ""
-
+    var userSelect = false
+    var isPageDataLoaded = false
     var spinnerPageArray: MutableList<PdfPages> = mutableListOf()
+    var pdfId: String? = null
+    var isFirstLoad = true
     var isErrorOpeningFile = false
     lateinit var sharedPref: SharedPreferences
     private var downloadManger: DownloadManager? = null
@@ -72,6 +78,7 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
     private lateinit var  pdfViewModel: PdfViewModel
 
     var document: Document?=null
+    val testUrl = "https://firebasestorage.googleapis.com/v0/b/examassist-b50d0.appspot.com/o/pdfs%2Fphusics1(2016-17).pdf?alt=media&token=216f5a16-d8fc-45b3-8758-e6380c39cb2f"//"https://www.clickdimensions.com/links/TestPDFfile.pdf"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -162,11 +169,11 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
                         )
                         if (appSpecificExternalDir.exists()){
                             //if(isErrorOpeningFile){
-                                try {
-                                    appSpecificExternalDir.deleteRecursively()
-                                }catch (e:Error){
-                                    return
-                                }
+                            try {
+                                appSpecificExternalDir.deleteRecursively()
+                            }catch (e:Error){
+                                return
+                            }
                             //}
                         }else{
                             //downloadPdf()
@@ -219,7 +226,7 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
                 lifecycleScope.launch{
                     encryptDownloadedFile()
                 }
-               // pdfViewModel.setProgress(false)
+                // pdfViewModel.setProgress(false)
             }
             context?.unregisterReceiver(this)
         }
@@ -234,29 +241,20 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
         pdfViewModel.getPdfDocument.observe(this) { doc ->
             if(doc!=null){
                 if(!doc.pdfPath.isNullOrBlank()){
-                        val fileData = readFile(doc.pdfPath!!)
-                        if (fileData != null) {
-                            this.displayFromByte(fileData)
-                        }
+                    val fileData = readFile(doc.pdfPath!!)
+                    LoadingUtils.hideDialog()
+                    if (fileData != null) {
+                        this.displayFromByte(fileData)
+                    }
                 }else{
                     downloadPdf()
                 }
             }else{
-               downloadPdf()
+                downloadPdf()
             }
         }
     }
     private fun getData() {
-        lifecycleScope.launch {
-            pdfViewModel.readPdfDocument.observeOnce(this@PdfActivity) { database ->
-                if (database.isNotEmpty()) {
-                    Log.d("RecipesFragment", "readDatabase called! ${database.size}")
-                    //mAdapter.setData(database)
-                } else {
-                   // requestApiData()
-                }
-            }
-        }
         document?.documentId?.let { docId ->
             pdfViewModel.getDoc(docId)
         }
@@ -298,7 +296,7 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
             }
             .onLoad {
                 binding.tvPageInfo.text = "1/$it"
-               // formSpinnerArray(it)
+                // formSpinnerArray(it)
             }
             .enableAnnotationRendering(true)
             .enableAntialiasing(true)
@@ -368,7 +366,7 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
         }
     }
 
-     fun encryptDownloadedFile() {
+    fun encryptDownloadedFile() {
         document?.pdfUrl?.let { pdf->
             try {
                 document?.documentId?.let { docId ->
@@ -376,29 +374,31 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
                         Environment.DIRECTORY_DOCUMENTS
                     ).toString() + "/" + docId
 
-                    val updatedFilePath = getExternalFilesDir(
-                        Environment.DIRECTORY_DOCUMENTS
-                    ).toString() + PREFIX + docId
+//                    val updatedFilePath = getExternalFilesDir(
+//                        Environment.DIRECTORY_DOCUMENTS
+//                    ).toString() + PREFIX + docId
 
                     val fileData = readFile(filePath)
+
                     fileData?.let {
-                        writeEncryptedFile(getEncryptedFile(updatedFilePath), it)
-                        val directory = File(updatedFilePath)
-                        try {
-                            directory.deleteRecursively()
-                        } catch (exp: Exception) {
-                            println("file read exception: ${exp.message}")
-                        }
-                        document?.pdfPath = updatedFilePath
+//                        writeEncryptedFile(getEncryptedFile(updatedFilePath), it)
+//                        val directory = File(updatedFilePath)
+//                        try {
+//                            directory.deleteRecursively()
+//                        } catch (exp: Exception) {
+//                            println("file read exception: ${exp.message}")
+//                        }
+                        document?.pdfPath = filePath
                         document?.let { doc->
                             lifecycleScope.launch{
                                 doc.pdfPath?.let { pPath ->
-                                    databaseHandler.documentDao().updateDocument(doc.documentId,pPath)
+                                    databaseHandler.documentDao().updateDocument(doc)
+                                    pdfViewModel.insertDocument(doc)
                                 }
                             }
 
                         }
-                     LoadingUtils.hideDialog()
+                        LoadingUtils.hideDialog()
                         this.displayFromByte(it)
                     }
                 }
@@ -407,11 +407,6 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
                 Log.d(this.localClassName, e.localizedMessage)
             }
         }
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        LoadingUtils.hideDialog()
     }
 
 

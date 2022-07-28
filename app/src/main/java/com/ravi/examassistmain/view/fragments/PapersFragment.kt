@@ -88,12 +88,14 @@ class PapersFragment : Fragment() {
         }
     }
     private fun readDatabase() {
+        mainViewModel.getDocumentByDocType(1)
         lifecycleScope.launch {
-            mainViewModel.getDocumentByDocType(1)
             mainViewModel.readDocs.observeOnce(viewLifecycleOwner) { database ->
                 if (database.isNotEmpty()) {
                     Log.d("RecipesFragment", "readDatabase called!")
-                    mAdapter.setData(database)
+                    val filteredList = database.filter { it.documentType==1 }
+
+                    mAdapter.setData(filteredList)
                 } else {
                     requestApiData()
                 }

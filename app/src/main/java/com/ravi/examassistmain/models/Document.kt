@@ -55,7 +55,6 @@ data class Document(
     var viewCount: Int? = 0,
     @get:PropertyName("pdf_url") @set:PropertyName("pdf_url")
     var pdfUrl: String? = "",
-    @get:PropertyName("pdf_path") @set:PropertyName("pdf_path")
     var pdfPath: String? = ""
 ) : Serializable
 

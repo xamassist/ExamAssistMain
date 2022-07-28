@@ -28,7 +28,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".pdf.PdfActivity"
+            android:name=".view.PdfActivity"
             android:exported="true" />
         <activity
             android:name=".view.DashboardActivity"

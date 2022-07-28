@@ -5,10 +5,11 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.ravi.examassistmain.models.Document
 import com.ravi.examassistmain.models.EAUsers
+import com.ravi.examassistmain.models.PdfDownloads
 import com.ravi.examassistmain.models.Subjects
 
 @Database(
-    entities = [Document::class,EAUsers::class,Subjects::class],
+    entities = [Document::class,EAUsers::class,Subjects::class,PdfDownloads::class],
     version = 1,
     exportSchema = false
 )

@@ -13,5 +13,5 @@
         app:layout_constraintTop_toTopOf="parent"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
-        app:lottie_rawRes="@raw/book_load3" />
+        app:lottie_rawRes="@raw/double_loader" />
 </androidx.constraintlayout.widget.ConstraintLayout>
