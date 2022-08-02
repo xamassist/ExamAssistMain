@@ -9,9 +9,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ravi.examassistmain.databinding.PaperListBinding
 import com.ravi.examassistmain.models.Document
-import com.ravi.examassistmain.view.PdfActivity
 import com.ravi.examassistmain.utils.DocumentDiffUtil
 import com.ravi.examassistmain.utils.ViewUtils
+import com.ravi.examassistmain.view.PdfActivity
 
 class PapersAdapter : RecyclerView.Adapter<PapersAdapter.ViewHolder>() {
     private var doc = emptyList<Document>()
@@ -38,13 +38,14 @@ class PapersAdapter : RecyclerView.Adapter<PapersAdapter.ViewHolder>() {
                 val firstLetter = document.documentTitle?.substring(0, 1)
                 binding.tvIconName.text = firstLetter
             }
-
-                binding.llNotesIcon.background = ViewUtils.instance.drawCircle(
-                    ContextCompat.getColor(
-                        binding.llNotesIcon.context,
-                        ViewUtils.instance.colorGenerator(position)
-                    )
+            binding.tvPaperYear.text = document.paperYear.toString()
+            binding.tvUploadedBy.text = "Uploaded by: ${document.uploaderName}"
+            binding.llNotesIcon.background = ViewUtils.instance.drawCircle(
+                ContextCompat.getColor(
+                    binding.llNotesIcon.context,
+                    ViewUtils.instance.colorGenerator(position)
                 )
+            )
 
             binding.mainCardView.setOnClickListener {
 

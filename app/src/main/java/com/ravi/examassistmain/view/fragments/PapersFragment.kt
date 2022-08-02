@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ravi.examassistmain.R
 import com.ravi.examassistmain.adapters.NotesAdapter
+import com.ravi.examassistmain.adapters.PapersAdapter
 import com.ravi.examassistmain.models.Document
 import com.ravi.examassistmain.utils.NetworkListener
 import com.ravi.examassistmain.utils.NetworkResult
@@ -32,7 +33,7 @@ class PapersFragment : Fragment() {
     private var documentArray: MutableList<Document> = mutableListOf()
     private lateinit var mainViewModel: MainViewModel
     private lateinit var networkListener: NetworkListener
-    private val mAdapter by lazy { NotesAdapter() }
+    private val mAdapter by lazy { PapersAdapter() }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view =  inflater.inflate(R.layout.fragment_paper, container, false)

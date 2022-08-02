@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 class UserPreferenceActivity : AppCompatActivity() {
     private val preferenceViewModel by lazy { ViewModelProvider(this)[UserPreferenceViewModel::class.java] }
 
-    private lateinit var binding: ActivityUserPreferenceBinding
+     lateinit var binding: ActivityUserPreferenceBinding
     private var prefUniversityList = listOf<String>()
     private var prefBranchList = listOf<String>()
     private var prefSemesterList = listOf<String>()
@@ -152,6 +152,7 @@ class UserPreferenceActivity : AppCompatActivity() {
     }
 
     private fun initObservers() {
+        LoadingUtils.showDialog(this,false)
         preferenceViewModel.preferenceResponse.observe(this) { list ->
             list?.let { result ->
                 when (list) {

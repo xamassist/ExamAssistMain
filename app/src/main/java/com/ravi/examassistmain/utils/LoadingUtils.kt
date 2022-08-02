@@ -8,7 +8,7 @@ class LoadingUtils {
         private var eaLoader: EALoader? = null
         fun showDialog(
             context: Context?,
-            isCancelable: Boolean
+            isCancelable: Boolean?=true
         ) {
             hideDialog()
             if (context != null) {

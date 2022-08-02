@@ -38,6 +38,9 @@ class NotesAdapter : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
                 val firstLetter = document.documentTitle?.substring(0, 1)
                 binding.tvNameIcon.text = firstLetter
             }
+//            tv_username
+            binding.tvUsername.text = document.uploaderName
+            val tags = document.documentTags
 
                 binding.llNotesIcon.background = ViewUtils.instance.drawCircle(
                     ContextCompat.getColor(

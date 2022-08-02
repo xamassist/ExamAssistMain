@@ -67,6 +67,7 @@
                 android:layout_toLeftOf="@+id/iv_dot_menu"
                 android:padding="@dimen/_6sdp"
                 android:src="@drawable/fullscreen"
+                android:visibility="gone"
                 app:tint="@color/ea_grey_700" />
 
             <ImageView
@@ -106,7 +107,9 @@
                 <com.github.barteksc.pdfviewer.PDFView
                     android:id="@+id/pdfView"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+
+                    />
             </androidx.cardview.widget.CardView>
 
         </RelativeLayout>

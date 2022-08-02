@@ -7,6 +7,7 @@ import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.ravi.examassistmain.databinding.ActivitySplashBinding
+import com.ravi.examassistmain.utils.observeOnce
 import com.ravi.examassistmain.viewmodel.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,14 +23,14 @@ class SplashActivity : AppCompatActivity() {
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        loginViewModel.readUser.observe(this){
+        loginViewModel.readUser.observeOnce(this){
             if(it.isNullOrEmpty()){
                 Handler(Looper.getMainLooper()).postDelayed ({
                     startActivity(Intent(this, OnBoardingActivity::class.java))
                 }, 1200)
             }else{
                 Handler(Looper.getMainLooper()).postDelayed ({
-                    startActivity(Intent(this, DashboardActivity::class.java))
+                    startActivity(Intent(this, UserPreferenceActivity::class.java))
                 }, 1200)
             }
         }

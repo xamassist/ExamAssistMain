@@ -81,6 +81,7 @@ class UserPreferenceFragment : Fragment(), PreferenceSelectionListener {
         }
         (activity as UserPreferenceActivity?)?.selectedArray?.set(fragIndex, index)
         (activity as UserPreferenceActivity?)?.currentFragment = fragIndex
+        (activity as UserPreferenceActivity?)?.binding?.userPrefVP?.currentItem = if(fragIndex<2) {fragIndex+1}else{fragIndex}
         (activity as UserPreferenceActivity?)?.updateBottomBars()
     }
 

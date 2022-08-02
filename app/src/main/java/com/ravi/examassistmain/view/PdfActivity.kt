@@ -1,17 +1,22 @@
 package com.ravi.examassistmain.view
 
 import android.Manifest
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.DownloadManager
 import android.content.*
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.*
+import android.os.Build.VERSION.SDK_INT
+import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -31,6 +36,7 @@ import com.ravi.examassistmain.models.PdfPages
 import com.ravi.examassistmain.pdf.PdfViewModel
 import com.ravi.examassistmain.utils.Constants.Companion.DB_NAME
 import com.ravi.examassistmain.utils.LoadingUtils
+import com.ravi.examassistmain.utils.showToast
 import com.shockwave.pdfium.PdfPasswordException
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -40,9 +46,10 @@ import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.net.URL
 
+
 @AndroidEntryPoint
 class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteListener,
-    OnPageErrorListener, View.OnTouchListener{
+    OnPageErrorListener, View.OnTouchListener {
 
     private lateinit var binding: ActivityPdfBinding
 
@@ -50,6 +57,7 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
         const val WATCH_TIME_SENT_DURATION: Long = 8
         const val PREFIX = "/_"
     }
+
     private var menuItem: MenuItem? = null
     private var permissionGranted: Boolean? = false
     private var PERMISSION_CODE = 4040
@@ -75,10 +83,11 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
     private var downloadManger: DownloadManager? = null
 
     private lateinit var databaseHandler: DocumentDatabase
-    private lateinit var  pdfViewModel: PdfViewModel
+    private lateinit var pdfViewModel: PdfViewModel
 
-    var document: Document?=null
-    val testUrl = "https://firebasestorage.googleapis.com/v0/b/examassist-b50d0.appspot.com/o/pdfs%2Fphusics1(2016-17).pdf?alt=media&token=216f5a16-d8fc-45b3-8758-e6380c39cb2f"//"https://www.clickdimensions.com/links/TestPDFfile.pdf"
+    var document: Document? = null
+    val testUrl =
+        "https://firebasestorage.googleapis.com/v0/b/examassist-b50d0.appspot.com/o/pdfs%2Fphusics1(2016-17).pdf?alt=media&token=216f5a16-d8fc-45b3-8758-e6380c39cb2f"//"https://www.clickdimensions.com/links/TestPDFfile.pdf"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,16 +95,17 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
         val view = binding.root
         setContentView(view)
         document = intent.getSerializableExtra("document") as? Document
-        LoadingUtils.showDialog(this,false)
+        LoadingUtils.showDialog(this, false)
         initData()
         initObservers()
     }
 
-    private fun initData(){
+    private fun initData() {
         pdfViewModel = ViewModelProvider(this@PdfActivity)[PdfViewModel::class.java]
         sharedPref = this.getSharedPreferences(
             "saveSecretKey",
-            MODE_PRIVATE)
+            MODE_PRIVATE
+        )
 
         binding.pdfTitle.text = document?.documentTitle
         setListeners()
@@ -118,22 +128,6 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSION_CODE &&
-            grantResults.isNotEmpty() &&
-            grantResults[0] == PackageManager.PERMISSION_GRANTED
-        ) {
-            permissionGranted = true
-            downloadPdf()
-        }
-    }
-
-
 
     private fun setCurrentPage(page: Int, pageCount: Int) {
 //        pageNumber = page
@@ -150,37 +144,99 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
             val fileString = fileName.substring(fileName.lastIndexOf('/') + 1)
             val fileDropId = fileString.dropLast(17)
             return fileDropId.replace("%20", " ")
-        } catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
 
         return ""
     }
 
+    private fun checkPermissionAndDownloadFile() {
+        requestPermission.launch(arrayOf(Manifest.permission.ACCESS_MEDIA_LOCATION))
+    }
+
+    private fun checkPermission(): Boolean {
+        return if (SDK_INT >= Build.VERSION_CODES.R) {
+            Environment.isExternalStorageManager()
+        } else {
+            val result =
+                ContextCompat.checkSelfPermission(this@PdfActivity, READ_EXTERNAL_STORAGE)
+            val result1 =
+                ContextCompat.checkSelfPermission(this@PdfActivity, WRITE_EXTERNAL_STORAGE)
+            result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED
+        }
+    }
+
+    private val requestPermission =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+
+            var permissionCount = 0
+            permissions.forEach { actionMap ->
+                run {
+                    when (actionMap.key) {
+                        Manifest.permission.ACCESS_MEDIA_LOCATION -> {
+                            if (actionMap.value) {
+                                permissionCount++
+                            } else {
+                                shouldAskPermissionAgain()
+                            }
+                        }
+                    }
+
+                }
+
+            }
+            if (permissionCount > 0) {
+                downloadPdf()
+            }
+
+        }
+
+    private fun shouldAskPermissionAgain() {
+        val requiredPermission1 = WRITE_EXTERNAL_STORAGE;
+        val requiredPermission2 = READ_EXTERNAL_STORAGE;
+        val checkVal1 = checkCallingOrSelfPermission(requiredPermission1)
+        val checkVal2 = checkCallingOrSelfPermission(requiredPermission2)
+
+        if (checkVal1 == PackageManager.PERMISSION_GRANTED && checkVal2 == PackageManager.PERMISSION_GRANTED) {
+            showToast(binding.root, "Permission already present")
+        } else {
+            Intent().apply {
+                action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                data = Uri.fromParts("package", packageName, null)
+                startActivity(this)
+            }
+        }
+    }
+
     private fun downloadPdf() {
         document?.pdfUrl?.let { pdf ->
             try {
-                if (!permissionGranted!! && (document?.pdfUrl?.isNotEmpty() ==true)) {
+                if (!permissionGranted!! && (document?.pdfUrl?.isNotEmpty() == true)) {
                     document?.documentId?.let { docId ->
-                        val fileName = document?.documentTitle ?:""
+                        val fileName = document?.documentTitle ?: ""
                         val appSpecificExternalDir = File(
                             this.getExternalFilesDir(null),
                             Environment.DIRECTORY_DOCUMENTS + "/" + docId
                         )
-                        if (appSpecificExternalDir.exists()){
+                        if (appSpecificExternalDir.exists()) {
                             //if(isErrorOpeningFile){
                             try {
                                 appSpecificExternalDir.deleteRecursively()
-                            }catch (e:Error){
+                            } catch (e: Error) {
                                 return
                             }
                             //}
-                        }else{
-                            //downloadPdf()
+                        } else {
+                            if (checkPermission()) {
+                                downloadPdf()
+                            }
+
                         }
                         try {
                             val downloadUrl = Uri.parse(pdf)
-                            downloadManger = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager?
+                            downloadManger =
+                                getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager?
                             val request = DownloadManager.Request(downloadUrl)
                             request.setAllowedNetworkTypes(
                                 DownloadManager.Request.NETWORK_WIFI or
@@ -194,7 +250,7 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
                                 Environment.DIRECTORY_DOCUMENTS,
                                 docId
                             )
-                            //request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN)
+                            // request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
                             registerReceiver(
                                 onComplete,
                                 IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
@@ -209,7 +265,7 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
                             ).show()
                         }
                     }
-                }else{
+                } else {
 
                 }
             } catch (e: Exception) {
@@ -218,12 +274,13 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
         }
 
     }
+
     private var onComplete: BroadcastReceiver = object : BroadcastReceiver() {
-        override  fun onReceive(context: Context?, intent: Intent?) {
+        override fun onReceive(context: Context?, intent: Intent?) {
             if (context != null) {
                 //  Toast.makeText(context, "File is Downloaded Successfully", Toast.LENGTH_SHORT).show()
                 Log.v("PdfViewerActivity", "File downloaded")
-                lifecycleScope.launch{
+                lifecycleScope.launch {
                     encryptDownloadedFile()
                 }
                 // pdfViewModel.setProgress(false)
@@ -237,23 +294,41 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
         binding.tvPageInfo.text = spinnerPageArray[page].pageString
 
     }
-    private fun initObservers(){
+
+    private fun initObservers() {
         pdfViewModel.getPdfDocument.observe(this) { doc ->
-            if(doc!=null){
-                if(!doc.pdfPath.isNullOrBlank()){
-                    val fileData = readFile(doc.pdfPath!!)
-                    LoadingUtils.hideDialog()
-                    if (fileData != null) {
-                        this.displayFromByte(fileData)
+            if (doc != null) {
+                if (!doc.pdfPath.isNullOrBlank()) {
+                    if (doc.pdfPath.equals("")) {
+                        if (checkPermission()) {
+                            downloadPdf()
+                        }
+
+                    } else {
+                        val fileData = readFile(doc.pdfPath!!)
+                        LoadingUtils.hideDialog()
+                        if (fileData != null) {
+                            this.displayFromByte(fileData)
+                        }
                     }
-                }else{
-                    downloadPdf()
+
+                } else {
+                    //if (checkPermission()) {
+                        downloadPdf()
+                    //}
+
                 }
-            }else{
-                downloadPdf()
+            } else {
+                if (checkPermission()) {
+                    downloadPdf()
+                }else{
+                    showToast(binding.root,"No permissions")
+                }
+
             }
         }
     }
+
     private fun getData() {
         document?.documentId?.let { docId ->
             pdfViewModel.getDoc(docId)
@@ -321,6 +396,7 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
             .load()
 
     }
+
     private fun handleFileOpeningError(exception: Throwable) {
         if (exception is PdfPasswordException) {
             if (pdfPassword != null) {
@@ -336,7 +412,10 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
         } else {
             isErrorOpeningFile = true
             //re-attempt file download
-            downloadPdf()
+            if (checkPermission()) {
+                downloadPdf()
+            }
+
         }
     }
 
@@ -367,7 +446,7 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
     }
 
     fun encryptDownloadedFile() {
-        document?.pdfUrl?.let { pdf->
+        document?.pdfUrl?.let { pdf ->
             try {
                 document?.documentId?.let { docId ->
                     val filePath = getExternalFilesDir(
@@ -389,8 +468,8 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
 //                            println("file read exception: ${exp.message}")
 //                        }
                         document?.pdfPath = filePath
-                        document?.let { doc->
-                            lifecycleScope.launch{
+                        document?.let { doc ->
+                            lifecycleScope.launch {
                                 doc.pdfPath?.let { pPath ->
                                     databaseHandler.documentDao().updateDocument(doc)
                                     pdfViewModel.insertDocument(doc)
@@ -410,7 +489,7 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
     }
 
 
-    private fun getEncryptedFile(filePath : String): EncryptedFile {
+    private fun getEncryptedFile(filePath: String): EncryptedFile {
 
         val masterKey = MasterKey.Builder(this)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
