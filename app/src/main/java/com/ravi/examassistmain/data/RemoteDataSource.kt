@@ -2,19 +2,14 @@ package com.ravi.examassistmain.data
 
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.ravi.examassistmain.models.EAUsers
-import com.ravi.examassistmain.utils.Constants.Companion.BRANCH
+import com.ravi.examassistmain.models.entity.EAUsers
 import com.ravi.examassistmain.utils.Constants.Companion.DOCUMENT_COLLECTION
 import com.ravi.examassistmain.utils.Constants.Companion.PREFERENCE
-import com.ravi.examassistmain.utils.Constants.Companion.SEMESTER
 import com.ravi.examassistmain.utils.Constants.Companion.SUBJECT_COLLECTION
-import com.ravi.examassistmain.utils.Constants.Companion.UNIVERSITY
 import com.ravi.examassistmain.utils.Constants.Companion.USER_COLLECTION
 import com.ravi.examassistmain.utils.Constants.Companion.USER_PREFERENCE
-import com.ravi.examassistmain.utils.PreferenceType
 import javax.inject.Inject
 
 

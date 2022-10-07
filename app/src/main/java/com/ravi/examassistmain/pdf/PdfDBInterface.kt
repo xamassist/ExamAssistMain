@@ -3,7 +3,7 @@ package com.ravi.examassistmain.pdf
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.ravi.examassistmain.models.Document
+import com.ravi.examassistmain.models.entity.Document
 
 @Dao
 interface PdfDBInterface {

@@ -2,13 +2,7 @@ package com.ravi.examassistmain.data.remote
 
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.ravi.examassistmain.models.Document
 import com.ravi.examassistmain.utils.Constants
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.tasks.await
-import javax.inject.Inject
 
 class DocumentFirebaseCall{
     private val fireStore: FirebaseFirestore = FirebaseFirestore.getInstance()

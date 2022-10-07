@@ -1,7 +1,6 @@
 package com.ravi.examassistmain.view
 
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -16,17 +15,14 @@ import androidx.lifecycle.lifecycleScope
 import com.ravi.examassistmain.R
 import com.ravi.examassistmain.databinding.ActivityDashboardBinding
 import com.ravi.examassistmain.databinding.BaseLayoutBinding
-import com.ravi.examassistmain.models.EAUsers
-import com.ravi.examassistmain.utils.NetworkListener
+import com.ravi.examassistmain.models.entity.EAUsers
 import com.ravi.examassistmain.utils.NetworkResult
 import com.ravi.examassistmain.utils.observeOnce
 import com.ravi.examassistmain.view.fragments.NotesFragment
 import com.ravi.examassistmain.view.fragments.PapersFragment
 import com.ravi.examassistmain.view.fragments.SyllabusFragment
 import com.ravi.examassistmain.viewmodel.DashboardViewModel
-import com.ravi.examassistmain.viewmodel.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 

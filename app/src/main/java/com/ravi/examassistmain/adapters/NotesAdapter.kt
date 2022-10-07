@@ -8,7 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ravi.examassistmain.databinding.NotesListBinding
-import com.ravi.examassistmain.models.Document
+import com.ravi.examassistmain.models.entity.Document
 import com.ravi.examassistmain.view.PdfActivity
 import com.ravi.examassistmain.utils.DocumentDiffUtil
 import com.ravi.examassistmain.utils.ViewUtils
@@ -32,7 +32,7 @@ class NotesAdapter : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
     }
 
     inner class ViewHolder(val binding: NotesListBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun setData(document: Document,position: Int) {
+        fun setData(document: Document, position: Int) {
             binding.docName.text = document.documentTitle
             if (document.documentTitle?.isNotBlank() == true) {
                 val firstLetter = document.documentTitle?.substring(0, 1)

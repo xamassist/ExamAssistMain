@@ -3,13 +3,11 @@ package com.ravi.examassistmain.data
 import com.ravi.examassistmain.data.database.DocumentDao
 import com.ravi.examassistmain.data.database.SubjectDao
 import com.ravi.examassistmain.data.database.UserDao
-import com.ravi.examassistmain.models.Document
-import com.ravi.examassistmain.models.EAUsers
-import com.ravi.examassistmain.models.PdfDownloads
+import com.ravi.examassistmain.models.entity.Document
+import com.ravi.examassistmain.models.entity.EAUsers
 import com.ravi.examassistmain.models.Subjects
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
-import javax.security.auth.Subject
 
 class LocalDataSource @Inject constructor(
     private val documentDao: DocumentDao,

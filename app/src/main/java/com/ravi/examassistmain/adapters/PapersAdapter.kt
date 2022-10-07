@@ -8,7 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ravi.examassistmain.databinding.PaperListBinding
-import com.ravi.examassistmain.models.Document
+import com.ravi.examassistmain.models.entity.Document
 import com.ravi.examassistmain.utils.DocumentDiffUtil
 import com.ravi.examassistmain.utils.ViewUtils
 import com.ravi.examassistmain.view.PdfActivity

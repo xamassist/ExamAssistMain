@@ -13,18 +13,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ravi.examassistmain.R
 import com.ravi.examassistmain.adapters.NotesAdapter
-import com.ravi.examassistmain.models.Document
-import com.ravi.examassistmain.utils.LoadingUtils
+import com.ravi.examassistmain.models.entity.Document
 import com.ravi.examassistmain.utils.NetworkListener
 import com.ravi.examassistmain.utils.NetworkResult
 import com.ravi.examassistmain.utils.observeOnce
 import com.ravi.examassistmain.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint

@@ -1,8 +1,7 @@
 package com.ravi.examassistmain.data.database
 
 import androidx.room.*
-import com.ravi.examassistmain.models.Document
-import com.ravi.examassistmain.models.EAUsers
+import com.ravi.examassistmain.models.entity.EAUsers
 import kotlinx.coroutines.flow.Flow
 
 @Dao

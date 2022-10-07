@@ -19,12 +19,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.ravi.examassistmain.R
 import com.ravi.examassistmain.animation.animationtypes.ZoomInTransformer
 import com.ravi.examassistmain.databinding.ActivityOnBoardingScreenBinding
-import com.ravi.examassistmain.models.EAUsers
+import com.ravi.examassistmain.models.entity.EAUsers
 import com.ravi.examassistmain.utils.NetworkResult
 import com.ravi.examassistmain.utils.hide
 import com.ravi.examassistmain.utils.show

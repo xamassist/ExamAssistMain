@@ -3,8 +3,6 @@ package com.ravi.examassistmain.viewmodel
 import android.util.Log
 import androidx.lifecycle.*
 import com.ravi.examassistmain.data.Repository
-import com.ravi.examassistmain.models.Document
-import com.ravi.examassistmain.models.EAUsers
 import com.ravi.examassistmain.models.Subjects
 import com.ravi.examassistmain.utils.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -1,14 +1,12 @@
 package com.ravi.examassistmain.viewmodel
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import com.ravi.examassistmain.data.Repository
-import com.ravi.examassistmain.models.Document
-import com.ravi.examassistmain.models.EAUsers
+import com.ravi.examassistmain.models.entity.Document
+import com.ravi.examassistmain.models.entity.EAUsers
 import com.ravi.examassistmain.utils.NetworkResult
-import com.ravi.examassistmain.utils.PreferenceType
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

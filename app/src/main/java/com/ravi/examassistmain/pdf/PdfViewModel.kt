@@ -2,15 +2,13 @@ package com.ravi.examassistmain.pdf
 
 import android.app.Application
 import android.content.Context
-import android.graphics.pdf.PdfDocument
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import com.ravi.examassistmain.data.Repository
-import com.ravi.examassistmain.models.Document
-import com.ravi.examassistmain.models.PdfDownloads
+import com.ravi.examassistmain.models.entity.Document
 import com.ravi.examassistmain.utils.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

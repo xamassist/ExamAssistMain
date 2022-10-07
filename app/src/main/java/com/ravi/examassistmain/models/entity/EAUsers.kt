@@ -1,4 +1,4 @@
-package com.ravi.examassistmain.models
+package com.ravi.examassistmain.models.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

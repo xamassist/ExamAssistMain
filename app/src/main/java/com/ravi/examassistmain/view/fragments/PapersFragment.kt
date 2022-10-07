@@ -6,16 +6,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.ravi.examassistmain.R
-import com.ravi.examassistmain.adapters.NotesAdapter
 import com.ravi.examassistmain.adapters.PapersAdapter
-import com.ravi.examassistmain.models.Document
+import com.ravi.examassistmain.models.entity.Document
 import com.ravi.examassistmain.utils.NetworkListener
 import com.ravi.examassistmain.utils.NetworkResult
 import com.ravi.examassistmain.utils.observeOnce
@@ -30,22 +29,32 @@ import kotlinx.coroutines.launch
 class PapersFragment : Fragment() {
 
     var notesRecyclerView: RecyclerView? = null
+    var swipeRefreshLayout: SwipeRefreshLayout? = null
     private var documentArray: MutableList<Document> = mutableListOf()
     private lateinit var mainViewModel: MainViewModel
     private lateinit var networkListener: NetworkListener
     private val mAdapter by lazy { PapersAdapter() }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val view =  inflater.inflate(R.layout.fragment_paper, container, false)
+        val view = inflater.inflate(R.layout.fragment_paper, container, false)
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
 
         notesRecyclerView = view.findViewById(R.id.rb_paperRecyclerView)
+        swipeRefreshLayout = view.findViewById(R.id.papersRefreshLayout)
         setAdapter()
         setData()
-        return  view
+        setListeners()
+        return view
     }
 
-    private fun setData(){
+    private fun setListeners() {
+
+        swipeRefreshLayout?.setOnRefreshListener {
+
+        }
+    }
+
+    private fun setData() {
         lifecycleScope.launchWhenStarted {
             networkListener = NetworkListener()
 
