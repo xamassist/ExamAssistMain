@@ -1,4 +1,4 @@
-package com.ravi.examassistmain.pdf
+package com.ravi.examassistmain.viewmodel
 
 import android.app.Application
 import android.content.Context

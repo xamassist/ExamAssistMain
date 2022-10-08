@@ -1,4 +1,4 @@
-package com.ravi.examassistmain.utils
+package com.ravi.examassistmain.view.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -33,8 +33,7 @@ class UserPreferenceFragment : Fragment(), PreferenceSelectionListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
+    ): View{
         binding = FragmentUserPreferenceBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -50,10 +49,6 @@ class UserPreferenceFragment : Fragment(), PreferenceSelectionListener {
         binding.tvTitle
     }
 
-    private fun getPreferenceData() {
-        //preferenceViewModel.getPreference(PreferenceType.UNIVERSITY)
-    }
-
     companion object {
 
         @JvmStatic
@@ -62,7 +57,6 @@ class UserPreferenceFragment : Fragment(), PreferenceSelectionListener {
                 arguments = Bundle().apply {
                     putString(PREFERENCE_TITLE, title)
                     putSerializable(ITEM_LIST, itemList as Serializable)
-
                 }
             }
     }

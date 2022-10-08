@@ -1,4 +1,4 @@
-package com.ravi.examassistmain.data.database
+package com.ravi.examassistmain.data.database.dao
 
 import androidx.room.*
 import com.ravi.examassistmain.models.entity.EAUsers

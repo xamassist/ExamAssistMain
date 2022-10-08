@@ -52,7 +52,6 @@ class MainViewModel @Inject constructor(
     /** Firestore */
     var documentResponse: MutableLiveData<NetworkResult<List<Document>>> = MutableLiveData()
 
-    @RequiresApi(Build.VERSION_CODES.M)
     fun getAllDocuments(docType: Int = 0) = viewModelScope.launch {
         getDocumentSaveCall(docType)
     }
@@ -75,7 +74,7 @@ class MainViewModel @Inject constructor(
                         docList.add(doc)
                     }
                 }
-                    documentResponse.value = handleDocumentResponse(docList)
+                    documentResponse.postValue(handleDocumentResponse(docList))
                     offlineCacheDocuments(docList)
                 }?.addOnFailureListener {
                     documentResponse.value = NetworkResult.Error("Something went wrong")

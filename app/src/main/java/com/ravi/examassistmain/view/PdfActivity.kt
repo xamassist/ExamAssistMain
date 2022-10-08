@@ -33,7 +33,7 @@ import com.ravi.examassistmain.data.database.DocumentDatabase
 import com.ravi.examassistmain.databinding.ActivityPdfBinding
 import com.ravi.examassistmain.models.entity.Document
 import com.ravi.examassistmain.models.PdfPages
-import com.ravi.examassistmain.pdf.PdfViewModel
+import com.ravi.examassistmain.viewmodel.PdfViewModel
 import com.ravi.examassistmain.utils.Constants.Companion.DB_NAME
 import com.ravi.examassistmain.utils.LoadingUtils
 import com.ravi.examassistmain.utils.showToast

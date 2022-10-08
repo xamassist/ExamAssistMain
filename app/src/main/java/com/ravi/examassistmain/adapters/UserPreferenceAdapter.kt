@@ -6,11 +6,11 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.ravi.examassistmain.R
 import com.ravi.examassistmain.databinding.PreferenceOptionRowBinding
 import com.ravi.examassistmain.utils.*
+import com.ravi.examassistmain.view.fragments.PreferenceSelectionListener
 
-class UserPreferenceAdapter(var list: List<String>?,val userPrefListener :PreferenceSelectionListener?=null
+class UserPreferenceAdapter(var list: List<String>?,val userPrefListener : PreferenceSelectionListener?=null
 ) :
     RecyclerView.Adapter<UserPreferenceAdapter.ViewHolder>() {
     var selectedIndex = -1

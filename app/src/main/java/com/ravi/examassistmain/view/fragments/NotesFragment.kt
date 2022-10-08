@@ -16,24 +16,22 @@ import com.ravi.examassistmain.adapters.NotesAdapter
 import com.ravi.examassistmain.models.entity.Document
 import com.ravi.examassistmain.utils.NetworkListener
 import com.ravi.examassistmain.utils.NetworkResult
+import com.ravi.examassistmain.utils.lv
 import com.ravi.examassistmain.utils.observeOnce
 import com.ravi.examassistmain.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 
-@ExperimentalCoroutinesApi
+
 @AndroidEntryPoint
 class NotesFragment : Fragment() {
 
     var notesRecyclerView: RecyclerView? = null
-    private var documentArray: MutableList<Document> = mutableListOf()
     private lateinit var mainViewModel: MainViewModel
     private lateinit var networkListener: NetworkListener
 
     private val mAdapter by lazy { NotesAdapter() }
-
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view =  inflater.inflate(R.layout.fragment_notes, container, false)
@@ -42,6 +40,7 @@ class NotesFragment : Fragment() {
         notesRecyclerView = view.findViewById(R.id.rb_paperRecyclerView)
         setAdapter()
         setData()
+        lv("checkk","onCreateView-notes")
         return  view
     }
 

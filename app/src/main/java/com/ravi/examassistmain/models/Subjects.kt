@@ -9,7 +9,7 @@ import java.io.Serializable
 data class Subjects(
     @PrimaryKey(autoGenerate = true)
     var id:Int,
-    var branch: String? = "",
+   // var branch: String? = "",
     var semester: Int = 0,
     var subjectName: String? = "",
     var university: Int? = 0,

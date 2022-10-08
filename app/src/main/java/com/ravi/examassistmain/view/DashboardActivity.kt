@@ -1,8 +1,11 @@
 package com.ravi.examassistmain.view
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -12,6 +15,9 @@ import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.material.navigation.NavigationView
 import com.ravi.examassistmain.R
 import com.ravi.examassistmain.databinding.ActivityDashboardBinding
 import com.ravi.examassistmain.databinding.BaseLayoutBinding
@@ -23,11 +29,13 @@ import com.ravi.examassistmain.view.fragments.PapersFragment
 import com.ravi.examassistmain.view.fragments.SyllabusFragment
 import com.ravi.examassistmain.viewmodel.DashboardViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
-
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
-class DashboardActivity : AppCompatActivity() {
+class DashboardActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListener {
     private lateinit var binding: ActivityDashboardBinding
     private lateinit var bindingBase: BaseLayoutBinding
     private lateinit var context: Context
@@ -35,7 +43,6 @@ class DashboardActivity : AppCompatActivity() {
     private val viewModel by lazy {
         ViewModelProvider(this)[DashboardViewModel::class.java]
     }
-    var subjectList = mutableListOf("Electrical Engineering", "Electrical Machine")
     var userData: EAUsers?=null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,14 +53,17 @@ class DashboardActivity : AppCompatActivity() {
         setContentView(view)
 
         setSetSideNavigation()
-        loadFragments(NotesFragment())
+        loadFragments(PapersFragment())
         setData()
+        binding.navView.setNavigationItemSelectedListener(this)
+        ;
+
     }
     private fun setData(){
         viewModel.readUser.observeOnce(this){
             userData = it.first()
             val branch = it.first()?.branch ?:""
-            val university:Int = 0//it.first()?.university?:0
+            val university: Int= (it.first()?.university)?.toIntOrNull() ?:0
             val semester = it.first()?.semester?:0
             lifecycleScope.launchWhenStarted {
                 readDatabase(branch,semester,university)
@@ -61,20 +71,17 @@ class DashboardActivity : AppCompatActivity() {
         }
 
     }
-    private fun readDatabase(branch:String,semester:Int,university:Int) {
+    private  fun readDatabase(branch:String,semester:Int,university:Int=0) {
 
-        lifecycleScope.launch {
             viewModel.readSubjects.observeOnce(this@DashboardActivity) { subjects ->
                 if (subjects.isNotEmpty()) {
-                    Log.d("RecipesFragment", "readDatabase called!")
-                    //mAdapter.setData(database)
                     val subjectList = subjects.map { it.subjectName }
                     setSpinner(subjectList)
                 } else {
                     requestApiData(branch,semester,university)
                 }
             }
-        }
+
     }
 
     private  fun requestApiData(branch:String, semester:Int, university:Int){
@@ -111,6 +118,7 @@ class DashboardActivity : AppCompatActivity() {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun setSetSideNavigation() {
         actionBarDrawerToggle =
             ActionBarDrawerToggle(this, binding.drawerLayout, R.string.nav_open, R.string.nav_close)
@@ -197,4 +205,23 @@ class DashboardActivity : AppCompatActivity() {
         return true
     }
 
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.nav_logout -> {
+                Log.d("eeeeeee", "onNavigationItemSelected: ")
+                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.google_token))
+                    .requestEmail()
+                    .build()
+
+               val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
+                mGoogleSignInClient.signOut().apply {
+                    startActivity(Intent(this@DashboardActivity,OnBoardingActivity::class.java))
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+                }
+                return true
+            }
+        }
+        return false
+    }
 }

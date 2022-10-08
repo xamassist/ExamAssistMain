@@ -27,6 +27,8 @@
                 android:layout_height="80dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="5dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:background="@color/colorPrimary">
                 <TextView
                     android:id="@+id/tv_icon_name"
@@ -56,14 +58,14 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:background="@drawable/papers_tag_background"
-                    android:backgroundTint="@color/red">
+                    android:backgroundTint="@color/green">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingLeft="4dp"
                         android:paddingRight="4dp"
-                        android:text="N"
+                        android:text="P"
                         android:gravity="center"
                         android:textColor="@color/white"
                         android:textSize="10sp" />
@@ -107,7 +109,7 @@
                         android:singleLine="true"
                         android:text="2019-20"
                         android:fontFamily="@font/nunito_bold"
-                        android:textSize="16sp" />
+                        android:textSize="14sp" />
 
                 </LinearLayout>
                 <TextView
@@ -118,6 +120,7 @@
                     android:layout_gravity="center"
                     android:singleLine="true"
                     android:text="Uploaded by: Admin"
+                    android:layout_marginTop="6dp"
                     android:fontFamily="@font/nunito_regular"
                     android:textSize="12sp"
                     tools:ignore="NestedWeights" />

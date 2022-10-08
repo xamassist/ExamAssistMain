@@ -1,6 +1,5 @@
 package com.ravi.examassistmain.adapters
 
-import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -15,7 +14,6 @@ import com.ravi.examassistmain.view.PdfActivity
 
 class PapersAdapter : RecyclerView.Adapter<PapersAdapter.ViewHolder>() {
     private var doc = emptyList<Document>()
-    var cxt: Context? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
         val binding = PaperListBinding
@@ -49,8 +47,8 @@ class PapersAdapter : RecyclerView.Adapter<PapersAdapter.ViewHolder>() {
 
             binding.mainCardView.setOnClickListener {
 
-                    val intent = Intent(binding.mainCardView.context, PdfActivity::class.java)
-                    intent.putExtra("document", document)
+                val intent = Intent(binding.mainCardView.context, PdfActivity::class.java)
+                intent.putExtra("document", document)
                 binding.mainCardView.context.startActivity(intent)
             }
         }

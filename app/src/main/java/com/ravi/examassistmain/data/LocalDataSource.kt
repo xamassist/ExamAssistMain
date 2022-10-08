@@ -1,8 +1,8 @@
 package com.ravi.examassistmain.data
 
-import com.ravi.examassistmain.data.database.DocumentDao
-import com.ravi.examassistmain.data.database.SubjectDao
-import com.ravi.examassistmain.data.database.UserDao
+import com.ravi.examassistmain.data.database.dao.DocumentDao
+import com.ravi.examassistmain.data.database.dao.SubjectDao
+import com.ravi.examassistmain.data.database.dao.UserDao
 import com.ravi.examassistmain.models.entity.Document
 import com.ravi.examassistmain.models.entity.EAUsers
 import com.ravi.examassistmain.models.Subjects

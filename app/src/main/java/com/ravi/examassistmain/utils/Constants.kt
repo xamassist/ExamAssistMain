@@ -35,6 +35,8 @@ class Constants {
         const val BRANCH = "branch"
         const val SEMESTER = "semester"
 
+        const val TIME_OUT_INTERVAL = 15L
+
 
 
     }

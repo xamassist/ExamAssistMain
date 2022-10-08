@@ -10,15 +10,17 @@ import androidx.fragment.app.FragmentPagerAdapter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import androidx.viewpager.widget.ViewPager
 import com.ravi.examassistmain.R
-import com.ravi.examassistmain.animation.EALoader
 import com.ravi.examassistmain.databinding.ActivityUserPreferenceBinding
-import com.ravi.examassistmain.utils.*
+import com.ravi.examassistmain.models.entity.EAUsers
+import com.ravi.examassistmain.utils.LoadingUtils
+import com.ravi.examassistmain.utils.NetworkResult
+import com.ravi.examassistmain.utils.disappear
+import com.ravi.examassistmain.utils.show
+import com.ravi.examassistmain.view.fragments.UserPreferenceFragment
 import com.ravi.examassistmain.viewmodel.UserPreferenceViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -31,15 +33,16 @@ class UserPreferenceActivity : AppCompatActivity() {
     private var prefBranchList = listOf<String>()
     private var prefSemesterList = listOf<String>()
     private var valueLoadCount = MutableLiveData(0)
+    private var userList: List<EAUsers?>? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityUserPreferenceBinding.inflate(layoutInflater)
         setContentView(binding.root)
         fetchData()
+        preferenceViewModel.getUserDataFromRoom()
         binding.btnContinue.setOnClickListener {
-            if(areAllSelected){
+            if (areAllSelected) {
                 saveUserPreference()
-                startActivity(Intent(this@UserPreferenceActivity,DashboardActivity::class.java))
                 return@setOnClickListener
             }
             val currentItem = binding.userPrefVP.currentItem
@@ -132,12 +135,22 @@ class UserPreferenceActivity : AppCompatActivity() {
             binding.barIV1.show()
             binding.barIV2.show()
             binding.barIV3.showContextMenu()
-
         }
     }
 
-    private fun saveUserPreference(){
-        preferenceViewModel.getUserDataFromRoom()
+    private fun saveUserPreference() {
+        if (!selectedArray.contains(-1)) {
+            userList?.first()?.let { user ->
+                user.apply {
+                    university = selectedArray[0].toString()
+                    branch = getBranchCodeFromIndex(selectedArray[1])
+                    semester = selectedArray[2] + 1
+                }
+                preferenceViewModel.updateUserInRoomDB(user)
+                preferenceViewModel.saveUserDataToServer(user)
+                startActivity(Intent(this@UserPreferenceActivity, DashboardActivity::class.java))
+            }
+        }
     }
 
     fun checkIfAllItemSelected(): Boolean {
@@ -175,24 +188,12 @@ class UserPreferenceActivity : AppCompatActivity() {
                         LoadingUtils.hideDialog()
                     }
                     is NetworkResult.Loading -> {
-                        LoadingUtils.showDialog(this,false)
+                        LoadingUtils.showDialog(this, false)
                     }
                 }
             }
         }
-        preferenceViewModel.readUser.observe(this){
-
-            val user = it
-            user.first()?.university = selectedArray[0].toString()
-            user.first()?.branch = selectedArray[1].toString()
-            user.first()?.semester = selectedArray[2]
-            user.first()?.let { it1 ->
-                preferenceViewModel.updateUserInRoomDB(it1)
-                preferenceViewModel.saveUserDataToServer(it1)
-            }
-
-        }
-
+        preferenceViewModel.readUser.observe(this) { userList = it }
 
         binding.userPrefVP.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {}
@@ -202,7 +203,7 @@ class UserPreferenceActivity : AppCompatActivity() {
                 positionOffsetPixels: Int
             ) {
                 if (currentFragment !== position) {
-                    
+
                     currentFragment = position
                     updateBottomBars()
                 }
@@ -210,6 +211,18 @@ class UserPreferenceActivity : AppCompatActivity() {
 
             override fun onPageSelected(position: Int) {}
         })
+    }
+
+    fun getBranchCodeFromIndex(index: Int): String {
+        return when (index) {
+            0 -> "EE"
+            1 -> "ECE"
+            2 -> "CSE"
+            3 -> "CE"
+            4 -> "ME"
+            5 -> "EIE"
+            else -> ""
+        }
     }
 
     private fun formPreferenceData(preferenceMap: HashMap<String, List<String>>): UserPreference? {

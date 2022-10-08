@@ -89,7 +89,7 @@ class OnBoardingActivity : AppCompatActivity(){
     private fun configureGoogleSignIn(){
         mAuth = FirebaseAuth.getInstance();
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken("1036639846334-n65t7i0bp59fh1dinipqid0r33pt7dnp.apps.googleusercontent.com")
+            .requestIdToken(getString(R.string.google_token))
             .requestEmail()
             .build()
 

@@ -15,22 +15,17 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.ravi.examassistmain.R
 import com.ravi.examassistmain.adapters.PapersAdapter
 import com.ravi.examassistmain.models.entity.Document
-import com.ravi.examassistmain.utils.NetworkListener
-import com.ravi.examassistmain.utils.NetworkResult
-import com.ravi.examassistmain.utils.observeOnce
+import com.ravi.examassistmain.utils.*
 import com.ravi.examassistmain.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class PapersFragment : Fragment() {
 
     var notesRecyclerView: RecyclerView? = null
     var swipeRefreshLayout: SwipeRefreshLayout? = null
-    private var documentArray: MutableList<Document> = mutableListOf()
     private lateinit var mainViewModel: MainViewModel
     private lateinit var networkListener: NetworkListener
     private val mAdapter by lazy { PapersAdapter() }
@@ -38,7 +33,6 @@ class PapersFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_paper, container, false)
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
-
         notesRecyclerView = view.findViewById(R.id.rb_paperRecyclerView)
         swipeRefreshLayout = view.findViewById(R.id.papersRefreshLayout)
         setAdapter()
@@ -48,9 +42,7 @@ class PapersFragment : Fragment() {
     }
 
     private fun setListeners() {
-
         swipeRefreshLayout?.setOnRefreshListener {
-
         }
     }
 
@@ -60,25 +52,27 @@ class PapersFragment : Fragment() {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 networkListener.checkNetworkAvailability(requireContext()).collect {
-                    readDatabase()
+                    requestApiData()
                 }
             }
         }
     }
     private fun requestApiData(){
-       mainViewModel.getAllDocuments(1)
+        mainViewModel.getAllDocuments(DocumentType.PAPERS.value)
         mainViewModel.documentResponse.observe(viewLifecycleOwner) { response ->
-
             response?.let { res ->
-                Log.v("NotesAdapter", "got something ${res.data.toString()}")
+                Log.v("papersAdapterres", "got something ${res.data.toString()}")
 
                 when (res) {
 
                     is NetworkResult.Success -> {
+                        LoadingUtils.hideDialog()
                         if (!res.data.isNullOrEmpty()) {
-                            val filteredList = res.data.filter { it.documentType==1 }
+                            val filteredList = res.data.filter { it.documentType == 1 }
                             mAdapter.setData(filteredList)
-                            Log.v("NotesAdapter", "data received!!! ${res.data.first()}")
+                            res.data.forEachIndexed { i, v ->
+                                Log.v("NotesAdapter$i", "data received!!! ${v.documentTitle} n $v")
+                            }
                         } else {
                             Log.v(
                                 "NotesAdapter",
@@ -87,10 +81,12 @@ class PapersFragment : Fragment() {
                         }
                     }
                     is NetworkResult.Error -> {
+                        LoadingUtils.hideDialog()
                         Log.v("NotesAdapter", "Firestore call error")
                     }
                     is NetworkResult.Loading -> {
                         Log.v("NotesAdapter", "still loading  \uD83E\uDD74")
+                        LoadingUtils.showDialog(requireContext())
 
                     }
                 }

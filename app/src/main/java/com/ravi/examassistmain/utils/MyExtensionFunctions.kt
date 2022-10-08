@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -35,4 +36,8 @@ fun View.disappear(){
 
 fun showToast(view: View,message:String) {
     Toast.makeText(view.context,message,Toast.LENGTH_SHORT).show()
+}
+
+fun lv(key:String,value:String){
+    Log.v(key,value)
 }

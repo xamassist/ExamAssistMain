@@ -18,7 +18,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
-
     @Singleton
     @Provides
     fun provideDatabase(
@@ -44,15 +43,6 @@ object DatabaseModule {
     @Singleton
     @Provides
     fun providesFirestoreInstance(): FirebaseFirestore {
-
         return FirebaseFirestore.getInstance()
     }
-//    @Singleton
-//    @Provides
-//    fun providesCollectionReference(
-//        fireStore: FirebaseFirestore
-//    ): CollectionReference {
-//        return fireStore.collection(Constants.DOCUMENT_COLLECTION)
-//    }
-//}
 }

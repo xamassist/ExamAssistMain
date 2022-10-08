@@ -7,11 +7,9 @@ import com.ravi.examassistmain.data.Repository
 import com.ravi.examassistmain.models.entity.Document
 import com.ravi.examassistmain.models.entity.EAUsers
 import com.ravi.examassistmain.utils.NetworkResult
-
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,10 +30,10 @@ class UserPreferenceViewModel @Inject constructor(
     fun getPreference() = viewModelScope.launch {
         getPreferenceSafeCall()
     }
-    fun getUserDataFromRoom() =
-        viewModelScope.launch(Dispatchers.IO) {
-          readUser=  repository.local.getEAUser().asLiveData()
-        }
+
+    fun getUserDataFromRoom() {
+        readUser = repository.local.getEAUser().asLiveData()
+    }
 
 
     private fun formDummyQuery() {

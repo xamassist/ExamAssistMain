@@ -2,6 +2,9 @@ package com.ravi.examassistmain.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.ravi.examassistmain.data.database.dao.DocumentDao
+import com.ravi.examassistmain.data.database.dao.SubjectDao
+import com.ravi.examassistmain.data.database.dao.UserDao
 import com.ravi.examassistmain.models.entity.Document
 import com.ravi.examassistmain.models.entity.EAUsers
 import com.ravi.examassistmain.models.entity.PdfDownloads
