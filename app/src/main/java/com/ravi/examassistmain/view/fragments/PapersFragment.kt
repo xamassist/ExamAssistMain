@@ -14,27 +14,33 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.ravi.examassistmain.R
 import com.ravi.examassistmain.adapters.PapersAdapter
-import com.ravi.examassistmain.models.entity.Document
 import com.ravi.examassistmain.utils.*
 import com.ravi.examassistmain.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class PapersFragment : Fragment() {
 
-    var notesRecyclerView: RecyclerView? = null
-    var swipeRefreshLayout: SwipeRefreshLayout? = null
+    private var notesRecyclerView: RecyclerView? = null
+    private var swipeRefreshLayout: SwipeRefreshLayout? = null
     private lateinit var mainViewModel: MainViewModel
     private lateinit var networkListener: NetworkListener
     private val mAdapter by lazy { PapersAdapter() }
+   var subjectCode = ""
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            subjectCode = it.getString("subject_code") ?:""
+        }
+    }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_paper, container, false)
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
         notesRecyclerView = view.findViewById(R.id.rb_paperRecyclerView)
         swipeRefreshLayout = view.findViewById(R.id.papersRefreshLayout)
+
         setAdapter()
         setData()
         setListeners()
@@ -49,16 +55,19 @@ class PapersFragment : Fragment() {
     private fun setData() {
         lifecycleScope.launchWhenStarted {
             networkListener = NetworkListener()
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 networkListener.checkNetworkAvailability(requireContext()).collect {
+                   // readDatabase()
                     requestApiData()
                 }
+            } else {
+                requestApiData()
             }
         }
     }
     private fun requestApiData(){
-        mainViewModel.getAllDocuments(DocumentType.PAPERS.value)
+        mainViewModel.getDocuments(DocumentType.PAPERS.value,subjectCode)
+       // mainViewModel.getAllDocuments(1)
         mainViewModel.documentResponse.observe(viewLifecycleOwner) { response ->
             response?.let { res ->
                 Log.v("papersAdapterres", "got something ${res.data.toString()}")
@@ -94,13 +103,12 @@ class PapersFragment : Fragment() {
         }
     }
     private fun readDatabase() {
-        mainViewModel.getDocumentByDocType(1)
+        mainViewModel.getDocumentByDocType(DocumentType.PAPERS.value)
         lifecycleScope.launch {
             mainViewModel.readDocs.observeOnce(viewLifecycleOwner) { database ->
                 if (database.isNotEmpty()) {
                     Log.d("RecipesFragment", "readDatabase called!")
                     val filteredList = database.filter { it.documentType==1 }
-
                     mAdapter.setData(filteredList)
                 } else {
                     requestApiData()
@@ -112,6 +120,16 @@ class PapersFragment : Fragment() {
         notesRecyclerView?.setHasFixedSize(true)
         notesRecyclerView?.layoutManager = LinearLayoutManager(activity)
         notesRecyclerView?.adapter = mAdapter
+    }
+    companion object {
+
+        @JvmStatic
+        fun newInstance(subjectCode:String) =
+            PapersFragment().apply {
+                arguments = Bundle().apply {
+                    putString("subject_code", subjectCode)
+                }
+            }
     }
 
 }

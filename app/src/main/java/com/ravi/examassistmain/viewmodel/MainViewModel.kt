@@ -55,17 +55,26 @@ class MainViewModel @Inject constructor(
     fun getAllDocuments(docType: Int = 0) = viewModelScope.launch {
         getDocumentSaveCall(docType)
     }
+    fun getDocuments(docType: Int = 0, subjectCode:String) = viewModelScope.launch {
+        getDocumentSaveCall(docType,false,subjectCode)
+    }
 
 
     private fun formDummyQuery() {
         // val query: Query =
     }
 
-    private suspend fun getDocumentSaveCall(docType: Int = 0) {
+    private suspend fun getDocumentSaveCall(docType: Int = 0,getAllDocs:Boolean=true, subjectCode: String?=null) {
         documentResponse.value = NetworkResult.Loading()
             try {
                 val docList = mutableListOf<Document>()
-                val response = repository.remote.getAllDocuments(docType)
+                val response = if(getAllDocs){
+                    repository.remote.getAllDocuments(docType)
+                }else{
+                    subjectCode?.let {
+                        repository.remote.getDocuments(docType,subjectCode)
+                    }
+                }
                 response?.get()?.addOnSuccessListener { snapshot ->
                     snapshot.documents.forEach {
                     val doc = it.toObject(Document::class.java)

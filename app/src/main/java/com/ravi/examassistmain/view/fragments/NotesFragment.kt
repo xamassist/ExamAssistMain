@@ -106,5 +106,15 @@ class NotesFragment : Fragment() {
         notesRecyclerView?.layoutManager = LinearLayoutManager(activity)
         notesRecyclerView?.adapter = mAdapter
     }
+    companion object {
+
+        @JvmStatic
+        fun newInstance(subjectCode:String) =
+            PapersFragment().apply {
+                arguments = Bundle().apply {
+                    putString("subjectCode", subjectCode)
+                }
+            }
+    }
 
 }

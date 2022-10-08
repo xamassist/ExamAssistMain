@@ -1,14 +1,9 @@
 package com.ravi.examassistmain.data
 
-import android.provider.Settings.Global.getString
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.ravi.examassistmain.R
 import com.ravi.examassistmain.models.entity.EAUsers
 import com.ravi.examassistmain.utils.Constants.Companion.DOCUMENT_COLLECTION
 import com.ravi.examassistmain.utils.Constants.Companion.PREFERENCE
@@ -31,6 +26,16 @@ class RemoteDataSource @Inject constructor(
         return try {
             withContext(Dispatchers.IO) {
                 fireStore.collection(DOCUMENT_COLLECTION).whereEqualTo("doc_type", docType)
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+    suspend fun getDocuments(docType: Int,subjectCode:String): Query? {
+        return try {
+            withContext(Dispatchers.IO) {
+                fireStore.collection(DOCUMENT_COLLECTION).whereEqualTo("doc_type", docType)
+                    .whereArrayContains("subject_code",subjectCode.trim())
             }
         } catch (e: Exception) {
             null

@@ -325,5 +325,15 @@ class SyllabusFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListene
         val exceptionMessage = e.message
         return e is FileNotFoundException && exceptionMessage != null && exceptionMessage.contains("Permission denied")
     }
+    companion object {
+
+        @JvmStatic
+        fun newInstance(subjectCode:String) =
+            PapersFragment().apply {
+                arguments = Bundle().apply {
+                    putString("subjectCode", subjectCode)
+                }
+            }
+    }
 
 }

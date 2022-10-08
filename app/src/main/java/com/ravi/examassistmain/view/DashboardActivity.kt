@@ -3,7 +3,6 @@ package com.ravi.examassistmain.view
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -21,6 +20,7 @@ import com.google.android.material.navigation.NavigationView
 import com.ravi.examassistmain.R
 import com.ravi.examassistmain.databinding.ActivityDashboardBinding
 import com.ravi.examassistmain.databinding.BaseLayoutBinding
+import com.ravi.examassistmain.models.Subjects
 import com.ravi.examassistmain.models.entity.EAUsers
 import com.ravi.examassistmain.utils.NetworkResult
 import com.ravi.examassistmain.utils.observeOnce
@@ -29,10 +29,6 @@ import com.ravi.examassistmain.view.fragments.PapersFragment
 import com.ravi.examassistmain.view.fragments.SyllabusFragment
 import com.ravi.examassistmain.viewmodel.DashboardViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class DashboardActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListener {
@@ -43,7 +39,8 @@ class DashboardActivity : AppCompatActivity(),NavigationView.OnNavigationItemSel
     private val viewModel by lazy {
         ViewModelProvider(this)[DashboardViewModel::class.java]
     }
-    var userData: EAUsers?=null
+    var userData: EAUsers? = null
+    var subjectList: List<Subjects>? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDashboardBinding.inflate(layoutInflater)
@@ -51,43 +48,40 @@ class DashboardActivity : AppCompatActivity(),NavigationView.OnNavigationItemSel
         bindingBase = binding.baseLayout
         context = this
         setContentView(view)
-
         setSetSideNavigation()
-        loadFragments(PapersFragment())
         setData()
         binding.navView.setNavigationItemSelectedListener(this)
-        ;
-
     }
+
     private fun setData(){
         viewModel.readUser.observeOnce(this){
             userData = it.first()
             val branch = it.first()?.branch ?:""
             val university: Int= (it.first()?.university)?.toIntOrNull() ?:0
             val semester = it.first()?.semester?:0
+
             lifecycleScope.launchWhenStarted {
                 readDatabase(branch,semester,university)
             }
         }
-
     }
+
     private  fun readDatabase(branch:String,semester:Int,university:Int=0) {
 
             viewModel.readSubjects.observeOnce(this@DashboardActivity) { subjects ->
                 if (subjects.isNotEmpty()) {
-                    val subjectList = subjects.map { it.subjectName }
-                    setSpinner(subjectList)
+                    val sList = subjects.map { it.subjectName }
+                    subjectList=subjects
+                    setSpinner(sList)
                 } else {
                     requestApiData(branch,semester,university)
                 }
             }
-
     }
 
     private  fun requestApiData(branch:String, semester:Int, university:Int){
         viewModel.getSubjectList(branch,semester,university)
         viewModel.subjectResponse.observe(this) { response ->
-
             response?.let { res ->
                 Log.v("NotesAdapter", "got something ${res.data.toString()}")
 
@@ -95,9 +89,9 @@ class DashboardActivity : AppCompatActivity(),NavigationView.OnNavigationItemSel
 
                     is NetworkResult.Success -> {
                         if (!res.data.isNullOrEmpty()) {
-                           // mAdapter.setData(res.data)
-                            val subjectList = res.data.map { it.subjectName }
-                            setSpinner(subjectList)
+                            val sList = res.data.map { it.subjectName }
+                            subjectList = res.data
+                            setSpinner(sList)
                             Log.v("NotesAdapter", "data received!!! ${res.data.first()}")
                         } else {
                             Log.v(
@@ -118,7 +112,6 @@ class DashboardActivity : AppCompatActivity(),NavigationView.OnNavigationItemSel
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun setSetSideNavigation() {
         actionBarDrawerToggle =
             ActionBarDrawerToggle(this, binding.drawerLayout, R.string.nav_open, R.string.nav_close)
@@ -134,12 +127,15 @@ class DashboardActivity : AppCompatActivity(),NavigationView.OnNavigationItemSel
 
         bindingBase.bottomNavigationView.setOnItemSelectedListener { menuItem ->
             var fragment: Fragment? = null
-            when (menuItem.itemId) {
-                R.id.navigation_notes -> fragment = NotesFragment()
-                R.id.navigation_paper -> fragment = PapersFragment()
-                R.id.navigation_syllabus -> fragment = SyllabusFragment()
+            subjectList?.firstOrNull()?.subjectCode?.let { subjectCode ->
+
+                when (menuItem.itemId) {
+                    R.id.navigation_notes -> fragment = NotesFragment.newInstance(subjectCode)
+                    R.id.navigation_paper -> fragment = PapersFragment.newInstance(subjectCode)
+                    R.id.navigation_syllabus -> fragment = SyllabusFragment.newInstance(subjectCode)
+                }
+                loadFragments(fragment)
             }
-            loadFragments(fragment)
             return@setOnItemSelectedListener true
         }
 
@@ -168,9 +164,7 @@ class DashboardActivity : AppCompatActivity(),NavigationView.OnNavigationItemSel
             listCat
         )
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-
-        binding.baseLayout.spSubjects?.apply {
+        binding.baseLayout.spSubjects.apply {
             adapter = spinnerArrayAdapter
 
             setSelection(selectedCatIndex)
@@ -180,11 +174,26 @@ class DashboardActivity : AppCompatActivity(),NavigationView.OnNavigationItemSel
                     parent: AdapterView<*>?, view: View?, position: Int, id: Long
                 ) {
                     selectedCatIndex = position
+                   val fragment = currentVisibleFragment()
+                    subjectList?.get(selectedCatIndex)?.subjectCode?.let { subjectCode->
+                        when(fragment){
+                            is PapersFragment-> loadFragments(PapersFragment.newInstance(subjectCode))
+                            is NotesFragment-> loadFragments(NotesFragment.newInstance(subjectCode))
+                            else ->  loadFragments(PapersFragment.newInstance(subjectCode))
+                        }
+                    }
+
                 }
             }
         }
-    }
+        subjectList?.firstOrNull()?.subjectCode?.let {
+            loadFragments(PapersFragment.newInstance(it))
+        }
 
+    }
+    fun currentVisibleFragment(): Fragment? {
+        return supportFragmentManager.fragments.firstOrNull()?.childFragmentManager?.fragments?.firstOrNull()
+    }
     var selectedCatIndex = -1
 
     override fun onBackPressed() {
