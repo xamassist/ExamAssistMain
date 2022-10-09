@@ -105,7 +105,7 @@ class NotesFragment : Fragment() {
             mainViewModel.readDocs.observeOnce(viewLifecycleOwner) { database ->
                 if (database.isNotEmpty()) {
                     Log.d("RecipesFragment", "readDatabase called!")
-                    val filteredList = database.filter { it.documentType==0 && it.subject_code?.contains(subjectCode) == true }
+                    val filteredList = database.filter { it.documentType==0 && it.subject_code?.contains(subjectCode.trim()) == true }
 
                     mAdapter.setData(filteredList)
                 } else {

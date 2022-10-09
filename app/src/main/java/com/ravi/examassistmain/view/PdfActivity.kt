@@ -51,7 +51,7 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
 
     private var isDownloadable = false
     private var downloadId: Long = 0L
-    var pdfView: PDFView? = null
+    //var pdfView: PDFView? = null
     private var pageNumber = 0
     private var totalPageCount = 0
     private var pdfPassword: String? = null
@@ -89,24 +89,28 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
 
     private fun setListeners() {
         binding.ivNext.setOnClickListener {
-            pdfView?.let { pdfView ->
                 val nextPage = pageNumber + 1
                 if (nextPage < totalPageCount) {
-                    pdfView.jumpTo(nextPage)
+                    binding.pdfView.jumpTo(nextPage)
+                    binding.tvPageInfo.text = "${nextPage+1}/${totalPageCount}"
                 }
-            }
         }
         binding.ivPrev.setOnClickListener {
-            getData()
+            Log.d("setListeners", "setListeners: ")
+            if (pageNumber > 0) {
+                val nextPage = pageNumber - 1
+                binding.pdfView.jumpTo(nextPage)
+                binding.tvPageInfo.text = "${nextPage+1}/${totalPageCount}"
+
+            }
+
         }
     }
 
 
     private fun setCurrentPage(page: Int, pageCount: Int) {
-//        pageNumber = page
-//        totalPageCount = pageCount
-//        title = String.format("%s %s / %s", "$pdfFileName ", page + 1, pageCount)
-//        binding.tvPageInfo.text = spinnerPageArray[page].pageString
+        pageNumber = page
+        totalPageCount = pageCount
     }
 
     private fun downloadPdf() {
@@ -182,7 +186,7 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
     }
 
     private fun setCurrentLastPage(page: Int, pageCount: Int) {
-        pdfView?.jumpTo(page)
+        binding.pdfView?.jumpTo(page)
         binding.tvPageInfo.text = spinnerPageArray[page].pageString
 
     }
@@ -229,7 +233,7 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
     }
 
     private fun configurePdfViewAndLoad(viewConfigurator: PDFView.Configurator) {
-        pdfView?.apply {
+        binding.pdfView?.apply {
             useBestQuality(true)
             minZoom = 1f
             midZoom = 2.0f

@@ -142,24 +142,25 @@
                 android:text="1/10"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_14ssp" />
+
             <ImageView
                 android:id="@+id/ivPrev"
                 android:layout_width="@dimen/_30sdp"
                 android:layout_height="@dimen/_30sdp"
                 android:layout_centerVertical="true"
-                android:src="@drawable/arrow_left"
                 android:clickable="true"
-                android:focusable="true"/>
+                android:focusable="true"
+                android:src="@drawable/arrow_left" />
+
             <ImageView
                 android:id="@+id/ivNext"
                 android:layout_width="@dimen/_30sdp"
                 android:layout_height="@dimen/_30sdp"
-                android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true"
-                android:src="@drawable/arrow_right"
+                android:layout_centerVertical="true"
                 android:clickable="true"
                 android:focusable="true"
-                />
+                android:src="@drawable/arrow_right" />
         </RelativeLayout>
 
     </androidx.cardview.widget.CardView>
