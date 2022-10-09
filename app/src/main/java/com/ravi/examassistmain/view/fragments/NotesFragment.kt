@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ravi.examassistmain.R
 import com.ravi.examassistmain.adapters.NotesAdapter
+import com.ravi.examassistmain.databinding.FragmentNotesBinding
 import com.ravi.examassistmain.models.entity.Document
 import com.ravi.examassistmain.utils.NetworkListener
 import com.ravi.examassistmain.utils.NetworkResult
@@ -27,21 +28,31 @@ import kotlinx.coroutines.flow.collect
 @AndroidEntryPoint
 class NotesFragment : Fragment() {
 
-    var notesRecyclerView: RecyclerView? = null
+    private lateinit var binding:FragmentNotesBinding
     private lateinit var mainViewModel: MainViewModel
     private lateinit var networkListener: NetworkListener
 
     private val mAdapter by lazy { NotesAdapter() }
+    var subjectCode = ""
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            subjectCode = it.getString("subject_code") ?:""
+        }
+    }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val view =  inflater.inflate(R.layout.fragment_notes, container, false)
+        binding = FragmentNotesBinding.inflate(layoutInflater)
+        //val view =  inflater.inflate(R.layout.fragment_notes, container, false)
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
-
-        notesRecyclerView = view.findViewById(R.id.rb_paperRecyclerView)
         setAdapter()
-        setData()
         lv("checkk","onCreateView-notes")
-        return  view
+        return  binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setData()
     }
 
 
@@ -56,7 +67,9 @@ class NotesFragment : Fragment() {
         }
     }
     private fun requestApiData(){
-       mainViewModel.getAllDocuments(0)
+     //  mainViewModel.getAllDocuments(0)
+        Log.d("requestApiData", "requestApiData:$subjectCode ")
+       mainViewModel.getDocuments(0,subjectCode)
         mainViewModel.documentResponse.observe(viewLifecycleOwner) { response ->
 
             response?.let { res ->
@@ -92,7 +105,7 @@ class NotesFragment : Fragment() {
             mainViewModel.readDocs.observeOnce(viewLifecycleOwner) { database ->
                 if (database.isNotEmpty()) {
                     Log.d("RecipesFragment", "readDatabase called!")
-                    val filteredList = database.filter { it.documentType==0 }
+                    val filteredList = database.filter { it.documentType==0 && it.subject_code?.contains(subjectCode) == true }
 
                     mAdapter.setData(filteredList)
                 } else {
@@ -102,17 +115,19 @@ class NotesFragment : Fragment() {
 
     }
     private fun setAdapter(){
-        notesRecyclerView?.setHasFixedSize(true)
-        notesRecyclerView?.layoutManager = LinearLayoutManager(activity)
-        notesRecyclerView?.adapter = mAdapter
+        binding.notesRecyclerView.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(activity)
+            adapter = mAdapter
+        }
     }
     companion object {
 
         @JvmStatic
         fun newInstance(subjectCode:String) =
-            PapersFragment().apply {
+            NotesFragment().apply {
                 arguments = Bundle().apply {
-                    putString("subjectCode", subjectCode)
+                    putString("subject_code", subjectCode)
                 }
             }
     }

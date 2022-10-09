@@ -1,11 +1,14 @@
 package com.ravi.examassistmain.models.entity
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.firestore.PropertyName
 import com.ravi.examassistmain.utils.Constants
+import kotlinx.android.parcel.Parcelize
 import java.io.Serializable
 
+@Parcelize
 @Entity(tableName = Constants.DOCUMENT_TABLE)
 data class Document(
     @get:PropertyName("avg_rating") @set:PropertyName("avg_rating")
@@ -33,8 +36,8 @@ data class Document(
     @get:PropertyName("sub_count_mjpru") @set:PropertyName("sub_count_mjpru")
     var subject_code_mjpru: String? = "",
 
-    @get:PropertyName("sub_count") @set:PropertyName("sub_count")
-    var subject_code: String? = "",
+    @get:PropertyName("subject_code") @set:PropertyName("subject_code")
+    var subject_code: List<String?>?=null,
 
     @get:PropertyName("tag") @set:PropertyName("tag")
     var documentTags: String? = "",
@@ -54,5 +57,5 @@ data class Document(
     var pdfUrl: String? = "",
     @get:PropertyName("pdf_path") @set:PropertyName("pdf_path")
     var pdfPath: String? = ""
-) : Serializable
+) : Parcelable
 

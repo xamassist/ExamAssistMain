@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/grayish"
+    android:background="@color/purple_200"
     tools:context=".view.fragments.NotesFragment">
 
 
@@ -13,7 +13,7 @@
         android:layout_marginBottom="5dp">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rb_paperRecyclerView"
+            android:id="@+id/notesRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:listitem="@layout/paper_list" />

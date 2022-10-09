@@ -46,7 +46,6 @@ class PapersAdapter : RecyclerView.Adapter<PapersAdapter.ViewHolder>() {
             )
 
             binding.mainCardView.setOnClickListener {
-
                 val intent = Intent(binding.mainCardView.context, PdfActivity::class.java)
                 intent.putExtra("document", document)
                 binding.mainCardView.context.startActivity(intent)

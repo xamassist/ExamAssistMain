@@ -37,7 +37,9 @@ fun View.disappear(){
 fun showToast(view: View,message:String) {
     Toast.makeText(view.context,message,Toast.LENGTH_SHORT).show()
 }
-
+fun showToast(context: Context,message:String) {
+    Toast.makeText(context,message,Toast.LENGTH_SHORT).show()
+}
 fun lv(key:String,value:String){
     Log.v(key,value)
 }

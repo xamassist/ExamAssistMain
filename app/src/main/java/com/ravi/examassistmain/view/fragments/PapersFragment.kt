@@ -42,11 +42,14 @@ class PapersFragment : Fragment() {
         swipeRefreshLayout = view.findViewById(R.id.papersRefreshLayout)
 
         setAdapter()
-        setData()
         setListeners()
         return view
     }
 
+    override fun onResume() {
+        super.onResume()
+        setData()
+    }
     private fun setListeners() {
         swipeRefreshLayout?.setOnRefreshListener {
         }
@@ -57,8 +60,7 @@ class PapersFragment : Fragment() {
             networkListener = NetworkListener()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 networkListener.checkNetworkAvailability(requireContext()).collect {
-                   // readDatabase()
-                    requestApiData()
+                    readDatabase()
                 }
             } else {
                 requestApiData()
@@ -67,6 +69,7 @@ class PapersFragment : Fragment() {
     }
     private fun requestApiData(){
         mainViewModel.getDocuments(DocumentType.PAPERS.value,subjectCode)
+        Log.d("subjectcode", "requestApiData: $subjectCode ")
        // mainViewModel.getAllDocuments(1)
         mainViewModel.documentResponse.observe(viewLifecycleOwner) { response ->
             response?.let { res ->
@@ -104,12 +107,21 @@ class PapersFragment : Fragment() {
     }
     private fun readDatabase() {
         mainViewModel.getDocumentByDocType(DocumentType.PAPERS.value)
+        Log.d("requestApiData", "requestApiData:$subjectCode ")
+
         lifecycleScope.launch {
             mainViewModel.readDocs.observeOnce(viewLifecycleOwner) { database ->
                 if (database.isNotEmpty()) {
                     Log.d("RecipesFragment", "readDatabase called!")
-                    val filteredList = database.filter { it.documentType==1 }
-                    mAdapter.setData(filteredList)
+
+                    val filteredList = database.filter {
+                        it.documentType == 1 && it.subject_code?.contains(subjectCode.trim()) == true
+                    }
+                    if (filteredList.isEmpty()){
+                       requestApiData()
+                    } else {
+                        mAdapter.setData(filteredList)
+                    }
                 } else {
                     requestApiData()
                 }

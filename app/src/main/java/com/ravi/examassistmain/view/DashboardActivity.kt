@@ -41,6 +41,7 @@ class DashboardActivity : AppCompatActivity(),NavigationView.OnNavigationItemSel
     }
     var userData: EAUsers? = null
     var subjectList: List<Subjects>? = null
+    var currentSubject =""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDashboardBinding.inflate(layoutInflater)
@@ -127,15 +128,16 @@ class DashboardActivity : AppCompatActivity(),NavigationView.OnNavigationItemSel
 
         bindingBase.bottomNavigationView.setOnItemSelectedListener { menuItem ->
             var fragment: Fragment? = null
-            subjectList?.firstOrNull()?.subjectCode?.let { subjectCode ->
-
-                when (menuItem.itemId) {
-                    R.id.navigation_notes -> fragment = NotesFragment.newInstance(subjectCode)
-                    R.id.navigation_paper -> fragment = PapersFragment.newInstance(subjectCode)
-                    R.id.navigation_syllabus -> fragment = SyllabusFragment.newInstance(subjectCode)
-                }
-                loadFragments(fragment)
+            val subjectCode = currentSubject.ifBlank {
+                subjectList?.firstOrNull()?.subjectCode ?: ""
             }
+            when (menuItem.itemId) {
+                R.id.navigation_notes -> fragment = NotesFragment.newInstance(subjectCode)
+                R.id.navigation_paper -> fragment = PapersFragment.newInstance(subjectCode)
+                R.id.navigation_syllabus -> fragment = SyllabusFragment.newInstance(subjectCode)
+            }
+            loadFragments(fragment)
+
             return@setOnItemSelectedListener true
         }
 
@@ -147,7 +149,6 @@ class DashboardActivity : AppCompatActivity(),NavigationView.OnNavigationItemSel
             }
         }
     }
-
     fun getUserData() {
       viewModel.readUser.observe(this){
       val branch = it.first()?.branch
@@ -176,9 +177,11 @@ class DashboardActivity : AppCompatActivity(),NavigationView.OnNavigationItemSel
                     selectedCatIndex = position
                    val fragment = currentVisibleFragment()
                     subjectList?.get(selectedCatIndex)?.subjectCode?.let { subjectCode->
+                        currentSubject = subjectCode
                         when(fragment){
                             is PapersFragment-> loadFragments(PapersFragment.newInstance(subjectCode))
                             is NotesFragment-> loadFragments(NotesFragment.newInstance(subjectCode))
+                            is SyllabusFragment-> loadFragments(SyllabusFragment.newInstance(subjectCode))
                             else ->  loadFragments(PapersFragment.newInstance(subjectCode))
                         }
                     }
@@ -192,7 +195,7 @@ class DashboardActivity : AppCompatActivity(),NavigationView.OnNavigationItemSel
 
     }
     fun currentVisibleFragment(): Fragment? {
-        return supportFragmentManager.fragments.firstOrNull()?.childFragmentManager?.fragments?.firstOrNull()
+        return supportFragmentManager.fragments.firstOrNull()//childFragmentManager?.fragments?.firstOrNull()
     }
     var selectedCatIndex = -1
 
@@ -217,7 +220,6 @@ class DashboardActivity : AppCompatActivity(),NavigationView.OnNavigationItemSel
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_logout -> {
-                Log.d("eeeeeee", "onNavigationItemSelected: ")
                 val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestIdToken(getString(R.string.google_token))
                     .requestEmail()

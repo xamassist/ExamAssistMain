@@ -116,5 +116,8 @@
     <string name="privacy_policy">Privacy Policy</string>
     <string name="logout">Logout</string>
     <string name="google_token">1036639846334-n65t7i0bp59fh1dinipqid0r33pt7dnp.apps.googleusercontent.com</string>
+    <string name="unable_to_load">Unable to download file</string>
+    <string name="sww">Some thing went wrong</string>
+    <string name="pdf_save_key">saveSecretKey</string>
 
 </resources>

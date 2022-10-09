@@ -329,11 +329,10 @@ class SyllabusFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListene
 
         @JvmStatic
         fun newInstance(subjectCode:String) =
-            PapersFragment().apply {
+            SyllabusFragment().apply {
                 arguments = Bundle().apply {
-                    putString("subjectCode", subjectCode)
+                    putString("subject_code", subjectCode)
                 }
             }
     }
-
 }
