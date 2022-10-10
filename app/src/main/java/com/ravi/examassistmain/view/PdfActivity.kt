@@ -25,6 +25,7 @@ import com.ravi.examassistmain.data.database.DocumentDatabase
 import com.ravi.examassistmain.databinding.ActivityPdfBinding
 import com.ravi.examassistmain.models.PdfPages
 import com.ravi.examassistmain.models.entity.Document
+import com.ravi.examassistmain.models.entity.PdfDownloads
 import com.ravi.examassistmain.utils.Constants.Companion.DB_NAME
 import com.ravi.examassistmain.utils.LoadingUtils
 import com.ravi.examassistmain.utils.showToast
@@ -51,7 +52,6 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
 
     private var isDownloadable = false
     private var downloadId: Long = 0L
-    //var pdfView: PDFView? = null
     private var pageNumber = 0
     private var totalPageCount = 0
     private var pdfPassword: String? = null
@@ -69,8 +69,6 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
         val view = binding.root
         setContentView(view)
         document = intent.getParcelableExtra("document") as? Document
-        LoadingUtils.showDialog(this, false)
-        loadDocument()
         initData()
         initObservers()
     }
@@ -82,8 +80,8 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
             MODE_PRIVATE
         )
         binding.pdfTitle.text = document?.documentTitle
+        LoadingUtils.showDialog(this, false)
         setListeners()
-        setUpDB()
         getData()
     }
 
@@ -147,6 +145,7 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
                                 Environment.DIRECTORY_DOCUMENTS,
                                 docId
                             )
+                            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
                             registerReceiver(
                                 onComplete,
                                 IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
@@ -193,34 +192,33 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
 
     private fun initObservers() {
         binding.ivBack.setOnClickListener { finish() }
-    }
-
-    private fun getData() {
-        document?.documentId?.let { docId ->
-            pdfViewModel.getDoc(docId)
-        }
-    }
-
-    private fun loadDocument() {
-        document?.let { doc ->
-            Log.d("pdfPath", "initObservers: ${doc.pdfPath}")
-            if (!doc.pdfPath.isNullOrBlank()) {
-                val fileData = readFile(doc.pdfPath!!)
-                LoadingUtils.hideDialog()
-                if (fileData != null) {
-                    this.displayFromByte(fileData)
-                }
-
-            } else {
+        pdfViewModel.downloadedPdf.observe(this){
+            if(it!=null){
+                loadDocument(it.pdfPath)
+            }else{
                 downloadPdf()
             }
         }
     }
 
-    private fun setUpDB() {
-        databaseHandler =
-            Room.databaseBuilder(this, DocumentDatabase::class.java, DB_NAME)
-                .allowMainThreadQueries().build()
+    private fun getData() {
+        document?.documentId?.let { docId ->
+            pdfViewModel.getPdf(docId)
+        }
+    }
+
+    private fun loadDocument(pdfPath:String) {
+
+            Log.d("pdfPath", "initObservers: ${pdfPath}")
+            if (pdfPath.isNotBlank()) {
+                val fileData = readFile(pdfPath)
+                LoadingUtils.hideDialog()
+                if (fileData != null) {
+                    this.displayFromByte(fileData)
+                }
+
+            }
+
     }
 
     private fun displayFromByte(bytes: ByteArray) {
@@ -311,10 +309,8 @@ class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteLis
 
                     val fileData = readFile(filePath)
                     fileData?.let {
-                        document?.pdfPath = filePath
-                        document?.let { doc ->
-                            pdfViewModel.insertDocument(doc)
-                        }
+                        val pdf = PdfDownloads(docId,filePath)
+                        pdfViewModel.insertPdf(pdf)
                         LoadingUtils.hideDialog()
                         this.displayFromByte(it)
                     }

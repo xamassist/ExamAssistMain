@@ -40,16 +40,13 @@ class PapersFragment : Fragment() {
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
         notesRecyclerView = view.findViewById(R.id.rb_paperRecyclerView)
         swipeRefreshLayout = view.findViewById(R.id.papersRefreshLayout)
-
+        setData()
         setAdapter()
         setListeners()
         return view
     }
 
-    override fun onResume() {
-        super.onResume()
-        setData()
-    }
+
     private fun setListeners() {
         swipeRefreshLayout?.setOnRefreshListener {
         }

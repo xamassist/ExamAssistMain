@@ -59,4 +59,7 @@ class LocalDataSource @Inject constructor(
     fun readPdfs(): Flow<List<PdfDownloads>> {
         return pdfDao.readDownloadedPdfs()
     }
+    fun getPdf(documentId: String): PdfDownloads {
+        return pdfDao.getPdf(documentId)
+    }
 }

@@ -9,6 +9,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import com.ravi.examassistmain.data.Repository
 import com.ravi.examassistmain.models.entity.Document
+import com.ravi.examassistmain.models.entity.PdfDownloads
 import com.ravi.examassistmain.utils.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -23,20 +24,18 @@ class PdfViewModel @Inject constructor(
 
     /** ROOM DATABASE */
 
-    var getPdfDocument: MutableLiveData<Document> = MutableLiveData()
-    var readPdfDocument: LiveData<List<Document>> =
-        repository.local.readDocument().asLiveData()
+    var readDownloadedFiles = repository.local.readPdfs().asLiveData()
+    var downloadedPdf :MutableLiveData<PdfDownloads?> = MutableLiveData()
 
 
-     fun insertDocument(document: Document) =
+     fun insertPdf(pdfDownloads: PdfDownloads) =
         viewModelScope.launch(Dispatchers.IO) {
-            repository.local.insertDocument(document)
+            repository.local.insertPdf(pdfDownloads)
         }
 
-    fun getDoc(documentId: String) {
+    fun getPdf(documentId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            getPdfDocument.postValue(repository.local.getDocument(documentId))
-            repository.local.getEAUser().asLiveData()
+            downloadedPdf.postValue(repository.local.getPdf(documentId))
         }
     }
 

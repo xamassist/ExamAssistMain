@@ -42,6 +42,10 @@ object DatabaseModule {
 
     @Singleton
     @Provides
+    fun providePdfDao(database: DocumentDatabase) = database.pdfDao()
+
+    @Singleton
+    @Provides
     fun providesFirestoreInstance(): FirebaseFirestore {
         return FirebaseFirestore.getInstance()
     }

@@ -47,12 +47,9 @@ class NotesFragment : Fragment() {
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
         setAdapter()
         lv("checkk","onCreateView-notes")
-        return  binding.root
-    }
-
-    override fun onResume() {
-        super.onResume()
         setData()
+
+        return  binding.root
     }
 
 
