@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -17,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKey
@@ -25,9 +27,11 @@ import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener
 import com.github.barteksc.pdfviewer.listener.OnPageErrorListener
 import com.github.barteksc.pdfviewer.util.FitPolicy
-import com.ravi.examassistmain.R
-import com.ravi.examassistmain.view.PdfActivity
-import com.ravi.examassistmain.utils.LoadingUtils
+import com.ravi.examassistmain.databinding.FragmentSyllabusBinding
+import com.ravi.examassistmain.models.entity.Document
+import com.ravi.examassistmain.models.entity.PdfDownloads
+import com.ravi.examassistmain.utils.*
+import com.ravi.examassistmain.viewmodel.MainViewModel
 import com.shockwave.pdfium.PdfPasswordException
 import kotlinx.coroutines.launch
 import java.io.BufferedInputStream
@@ -39,7 +43,6 @@ import java.util.*
 
 class SyllabusFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListener,
     OnPageErrorListener {
-    var pdfView: PDFView? = null
     private var permissionGranted: Boolean? = true
     private var downloadManger: DownloadManager? = null
     private var downloadId: Long = 0L
@@ -47,37 +50,146 @@ class SyllabusFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListene
     var fileName = ""
     var fileLocation: File? = null
 
-
-    val testUrl =
-        "https://firebasestorage.googleapis.com/v0/b/examassist-b50d0.appspot.com/o/pdfs%2Fphusics1(2016-17)%20(1).pdf?alt=media&token=462b6351-b7c1-4004-9b3a-ddb900c6de0c"
+    private lateinit var mainViewModel: MainViewModel
+    var subjectCode = ""
+    var pdfDocument:Document?=null
+    private lateinit var networkListener: NetworkListener
+    lateinit var binding: FragmentSyllabusBinding
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            subjectCode = it.getString("subject_code") ?:""
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-
-        val view = inflater.inflate(R.layout.fragment_syllabus, container, false)
-        pdfView = view.findViewById(R.id.pdfView)
-        val myUri = Uri.parse(testUrl)
-        downloadPdf()
-        // displayFromByte(myUri)
-        return view
+        binding = FragmentSyllabusBinding.inflate(LayoutInflater.from(container?.context))
+        initObservers()
+        getDocumentData()
+        return binding.root
     }
 
     private fun displayFromByte(bytes: ByteArray) {
-        pdfView?.let {
+        binding.pdfView.let {
             configurePdfViewAndLoad(it.fromBytes(bytes))
         }
     }
+   private fun initObservers(){
+       mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
 
-    private fun displayFromFile(bytes: File) {
-        pdfView?.let {
-            configurePdfViewAndLoad(it.fromFile(bytes))
+        mainViewModel.downloadedPdf.observe(viewLifecycleOwner){
+            if(it!=null){
+                loadDocument(it.pdfPath)
+            }else{
+                pdfDocument?.pdfUrl?.let { url ->
+                    downloadPdf(url)
+                }
+            }
         }
     }
+    private fun getData(document:Document) {
+        document.documentId.let { docId ->
 
+            mainViewModel.getPdf(docId)
+        }
+    }
+    private fun loadDocument(pdfPath:String) {
+
+        Log.d("pdfPath", "initObservers: ${pdfPath}")
+        if (pdfPath.isNotBlank()) {
+            val fileData = readFile(pdfPath)
+            LoadingUtils.hideDialog()
+            if (fileData != null) {
+                this.displayFromByte(fileData)
+            }
+
+        }else{
+            Log.d("pdfPath", "file data present but no file path present")
+        }
+
+    }
+
+    private fun displayFromFile(bytes: File) {
+        configurePdfViewAndLoad(binding.pdfView.fromFile(bytes))
+    }
+    private fun getDocumentData() {
+        lifecycleScope.launchWhenStarted {
+            networkListener = NetworkListener()
+            readDatabase()
+        }
+    }
+    private fun requestApiData(){
+        mainViewModel.getDocuments(DocumentType.SYLLABUS.value,subjectCode)
+        Log.d("subjectcode", "requestApiData: $subjectCode ")
+        // mainViewModel.getAllDocuments(1)
+        mainViewModel.documentResponse.observe(viewLifecycleOwner) { response ->
+            response?.let { res ->
+                Log.v("papersAdapterres", "got something ${res.data.toString()}")
+
+                when (res) {
+
+                    is NetworkResult.Success -> {
+                        LoadingUtils.hideDialog()
+                        if (!res.data.isNullOrEmpty()) {
+                            val document = res.data.firstOrNull() { it.documentType == 2 && it.subject_code?.contains(subjectCode.trim()) == true }
+                            pdfDocument= document
+                            if (document != null) {
+                                getData(document)
+                            }
+                            document?.pdfUrl?.let {
+                               // loadDocument(it)
+                                //get doc first
+
+                                //downloadPdf(it)
+                            }
+                        } else {
+                            Log.v(
+                                "NotesAdapter",
+                                "hot was successful but no data document received"
+                            )
+                        }
+                    }
+                    is NetworkResult.Error -> {
+                        LoadingUtils.hideDialog()
+                        Log.v("NotesAdapter", "Firestore call error")
+                    }
+                    is NetworkResult.Loading -> {
+                        Log.v("NotesAdapter", "still loading  \uD83E\uDD74")
+                        LoadingUtils.showDialog(requireContext())
+
+                    }
+                }
+            }
+        }
+    }
+    private fun readDatabase() {
+        mainViewModel.getDocumentByDocType(DocumentType.PAPERS.value)
+        Log.d("requestApiData", "requestApiData:$subjectCode ")
+
+        lifecycleScope.launch {
+            mainViewModel.readDocs.observeOnce(viewLifecycleOwner) { database ->
+                if (database.isNotEmpty()) {
+                    Log.d("RecipesFragment", "readDatabase called!")
+
+                    val document = database.firstOrNull {
+                        it.documentType == 2 && it.subject_code?.contains(subjectCode.trim()) == true
+                    }
+                    if(document==null){
+                        requestApiData()
+                    }else{
+                        pdfDocument = document
+                        loadDocument(document.pdfPath!!)
+                    }
+                } else {
+                    requestApiData()
+                }
+            }
+        }
+    }
     override fun onPageChanged(page: Int, pageCount: Int) {
         TODO("Not yet implemented")
     }
@@ -92,11 +204,13 @@ class SyllabusFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListene
 
     private fun configurePdfViewAndLoad(viewConfigurator: PDFView.Configurator) {
 
-        pdfView?.useBestQuality(true)
-        pdfView?.minZoom = 1f
-        pdfView?.midZoom = 2.0f
-        pdfView?.maxZoom = 5.0f
-        pdfView?.fitsSystemWindows = true
+        binding.pdfView.apply {
+            useBestQuality(true)
+            minZoom = 1f
+            midZoom = 2.0f
+            maxZoom = 5.0f
+            fitsSystemWindows = true
+        }
 
         viewConfigurator
             .defaultPage(0)
@@ -130,31 +244,15 @@ class SyllabusFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListene
 
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSION_CODE &&
-            grantResults.isNotEmpty() &&
-            grantResults[0] == PackageManager.PERMISSION_GRANTED
-        ) {
-            permissionGranted = true
-            downloadPdf()
-        }
-    }
 
-
-
-    private fun downloadPdf() {
-        testUrl?.let { pdf ->
+    private fun downloadPdf(pdfUrl:String) {
             try {
-                if (permissionGranted!! && testUrl.isNotEmpty()) {
-                    fileName = Date().time.toString()
+                if (pdfUrl.isNotEmpty()) {
+                    //fileName = Date().time.toString()
+                    val docId = pdfDocument?.documentId ?:""
                     val appSpecificExternalDir = File(
                         requireActivity().getExternalFilesDir(null),
-                        Environment.DIRECTORY_DOCUMENTS + "/" + fileName
+                        Environment.DIRECTORY_DOCUMENTS + "/" + docId//fileName
                     )
                     fileLocation = appSpecificExternalDir
                     if (appSpecificExternalDir.exists()) {
@@ -165,11 +263,9 @@ class SyllabusFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListene
                             return
                         }
                         //}
-                    } else {
-                        //downloadPdf()
                     }
                     try {
-                        val downloadUrl = Uri.parse(pdf)
+                        val downloadUrl = Uri.parse(pdfUrl)
                         downloadManger =
                             requireActivity().getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager?
                         val request = DownloadManager.Request(downloadUrl)
@@ -183,7 +279,7 @@ class SyllabusFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListene
                         request.setDestinationInExternalFilesDir(
                             requireContext(),
                             Environment.DIRECTORY_DOCUMENTS,
-                            fileName
+                            docId
                         )
                         //request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN)
                         requireActivity().registerReceiver(
@@ -207,7 +303,7 @@ class SyllabusFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListene
             } catch (e: Exception) {
                 Log.e("Error::", e.toString())
             }
-        }
+
 
     }
 
@@ -217,7 +313,6 @@ class SyllabusFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListene
                 //  Toast.makeText(context, "File is Downloaded Successfully", Toast.LENGTH_SHORT).show()
                 Log.v("PdfViewerActivity", "File downloaded")
                 lifecycleScope.launch {
-
                     encryptDownloadedFile()
                 }
                 // pdfViewModel.setProgress(false)
@@ -227,41 +322,25 @@ class SyllabusFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListene
     }
 
     fun encryptDownloadedFile() {
-
-        testUrl?.let { pdf ->
-            try {
-                val filePath = requireActivity().getExternalFilesDir(
+        try {
+            pdfDocument?.documentId?.let { docId ->
+                val filePath = requireContext().getExternalFilesDir(
                     Environment.DIRECTORY_DOCUMENTS
-                ).toString() + "/" + Date().time
+                ).toString() + "/" + docId
 
-                val updatedFilePath = requireActivity().getExternalFilesDir(
-                    Environment.DIRECTORY_DOCUMENTS
-                ).toString() + PdfActivity.PREFIX + Date().time
                 val fileData = readFile(filePath)
-
-                requireActivity().runOnUiThread {
-                    LoadingUtils.hideDialog()
-                    fileLocation?.let { displayFromFile(it) }
+                fileData?.let {
+                    this.displayFromByte(it)
                 }
-
-//                fileData?.let {
-//                    writeEncryptedFile(getEncryptedFile(updatedFilePath), it)
-//                    val directory = File(updatedFilePath)
-//                    try {
-//                        directory.deleteRecursively()
-//                    } catch (exp: Exception) {
-//                        println("file read exception: ${exp.message}")
-//                    }
-//
-//                    LoadingUtils.hideDialog()
-//                    this.displayFromByte(it)
-//                }
-
-
-            } catch (e: Exception) {
-                Log.d(requireActivity().localClassName, e.localizedMessage)
+                val pdf = PdfDownloads(docId,filePath)
+                mainViewModel.insertPdf(pdf)
+                LoadingUtils.hideDialog()
             }
+
+        } catch (e: Exception) {
+            Log.d(this.fileName, e.message?:"")
         }
+
     }
 
     private fun getEncryptedFile(filePath: String): EncryptedFile {

@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import com.ravi.examassistmain.data.Repository
 import com.ravi.examassistmain.models.entity.Document
+import com.ravi.examassistmain.models.entity.PdfDownloads
 import com.ravi.examassistmain.utils.NetworkResult
 
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +24,9 @@ class MainViewModel @Inject constructor(
     //val readDocument: LiveData<List<DocumentEntity>> = repository.local.readDocument().asLiveData()
     var readDocs: LiveData<List<Document>> = repository.local.readDocument().asLiveData()
     var cachedResponse: LiveData<List<Document>> = MutableLiveData()
+    var downloadedPdf :MutableLiveData<PdfDownloads?> = MutableLiveData()
+
+
     private fun insertDocument(document: Document) =
         viewModelScope.launch(Dispatchers.IO) {
             repository.local.insertDocument(document)
@@ -49,6 +53,17 @@ class MainViewModel @Inject constructor(
             //repository.local.deleteAllDocuments()
         }
 
+
+    fun insertPdf(pdfDownloads: PdfDownloads) =
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.local.insertPdf(pdfDownloads)
+        }
+
+    fun getPdf(documentId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            downloadedPdf.postValue(repository.local.getPdf(documentId))
+        }
+    }
     /** Firestore */
     var documentResponse: MutableLiveData<NetworkResult<List<Document>>> = MutableLiveData()
 

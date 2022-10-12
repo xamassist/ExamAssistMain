@@ -27,7 +27,7 @@ class PapersFragment : Fragment() {
     private lateinit var mainViewModel: MainViewModel
     private lateinit var networkListener: NetworkListener
     private val mAdapter by lazy { PapersAdapter() }
-   var subjectCode = ""
+    var subjectCode = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
